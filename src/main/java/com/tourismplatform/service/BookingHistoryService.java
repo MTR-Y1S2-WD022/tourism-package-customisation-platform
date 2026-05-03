@@ -28,8 +28,8 @@ public class BookingHistoryService {
                     b.booking_status,
                     COALESCE(p.payment_status, b.payment_status, 'PENDING') AS payment_status,
                     CASE
-                        WHEN r.review_id IS NULL THEN false
-                        ELSE true
+                        WHEN r.review_id IS NULL THEN 0
+                        ELSE 1
                     END AS review_exists
                 FROM bookings b
                 JOIN tour_packages tp ON b.package_id = tp.package_id
@@ -89,8 +89,8 @@ public class BookingHistoryService {
                     b.booking_status,
                     COALESCE(p.payment_status, b.payment_status, 'PENDING') AS payment_status,
                     CASE
-                        WHEN r.review_id IS NULL THEN false
-                        ELSE true
+                        WHEN r.review_id IS NULL THEN 0
+                        ELSE 1
                     END AS review_exists
                 FROM bookings b
                 JOIN tour_packages tp ON b.package_id = tp.package_id
