@@ -1,7 +1,9 @@
 package com.tourismplatform.controller;
 
 import com.tourismplatform.model.Admin;
+import com.tourismplatform.model.User;
 import com.tourismplatform.service.AdminService;
+import com.tourismplatform.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,9 +16,11 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    private final UserService userService;
 
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, UserService userService) {
         this.adminService = adminService;
+        this.userService = userService;
     }
 
     @GetMapping("/login")
@@ -185,6 +189,84 @@ public class AdminController {
         String message = adminService.deactivateAdmin(adminId, loggedInAdmin.getAdminId());
 
         return "redirect:/admin/list?message=" + message;
+    }
+
+    @GetMapping("/users")
+    public String listUsers(HttpSession session,
+                            Model model,
+                            @RequestParam(required = false) String message) {
+
+        Admin loggedInAdmin = getLoggedInAdmin(session);
+
+        if (loggedInAdmin == null) {
+            return "redirect:/admin/login";
+        }
+
+        List<User> users = userService.getAllUsers();
+
+        model.addAttribute("users", users);
+        model.addAttribute("message", message);
+
+        return "admin/user-list";
+    }
+
+    @GetMapping("/users/edit/{userId}")
+    public String showEditUserForm(@PathVariable int userId,
+                                   HttpSession session,
+                                   Model model) {
+
+        Admin loggedInAdmin = getLoggedInAdmin(session);
+
+        if (loggedInAdmin == null) {
+            return "redirect:/admin/login";
+        }
+
+        User user = userService.getUserById(userId);
+
+        if (user == null) {
+            return "redirect:/admin/users?message=User not found.";
+        }
+
+        model.addAttribute("user", user);
+
+        return "user/user-form";
+    }
+
+    @PostMapping("/users/update")
+    public String updateUserByAdmin(@ModelAttribute User user,
+                                    HttpSession session,
+                                    Model model) {
+
+        Admin loggedInAdmin = getLoggedInAdmin(session);
+
+        if (loggedInAdmin == null) {
+            return "redirect:/admin/login";
+        }
+
+        boolean updated = userService.updateUser(user);
+
+        if (!updated) {
+            model.addAttribute("errorMessage", "Failed to update user.");
+            model.addAttribute("user", user);
+            return "user/user-form";
+        }
+
+        return "redirect:/admin/users?message=User updated successfully.";
+    }
+
+    @GetMapping("/users/deactivate/{userId}")
+    public String deactivateUserByAdmin(@PathVariable int userId,
+                                        HttpSession session) {
+
+        Admin loggedInAdmin = getLoggedInAdmin(session);
+
+        if (loggedInAdmin == null) {
+            return "redirect:/admin/login";
+        }
+
+        String message = userService.deactivateUser(userId);
+
+        return "redirect:/admin/users?message=" + message;
     }
 
     private Admin getLoggedInAdmin(HttpSession session) {
