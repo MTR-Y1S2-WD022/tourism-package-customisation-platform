@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS admins (
             'Default Admin',
             'admin@gmail.com',
             'admin123',
-            'ADMIN',
+            'SUPER_ADMIN',
             'ACTIVE',
             TRUE
         );
