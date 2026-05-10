@@ -23,11 +23,21 @@ public class BookingDAO {
         booking.setBookingId(rs.getInt("booking_id"));
         booking.setUserId(rs.getInt("user_id"));
         booking.setPackageId(rs.getInt("package_id"));
+
+        int couponId = rs.getInt("coupon_id");
+        if (rs.wasNull()) {
+            booking.setCouponId(null);
+        } else {
+            booking.setCouponId(couponId);
+        }
+
         booking.setStartDate(rs.getDate("start_date").toLocalDate());
         booking.setEndDate(rs.getDate("end_date").toLocalDate());
         booking.setHotelType(rs.getString("hotel_type"));
         booking.setMealOption(rs.getString("meal_option"));
         booking.setGuideOption(rs.getString("guide_option"));
+        booking.setSubtotalAmount(rs.getBigDecimal("subtotal_amount"));
+        booking.setDiscountAmount(rs.getBigDecimal("discount_amount"));
         booking.setTotalAmount(rs.getBigDecimal("total_amount"));
         booking.setBookingStatus(rs.getString("booking_status"));
         booking.setPaymentStatus(rs.getString("payment_status"));
@@ -43,19 +53,24 @@ public class BookingDAO {
     public int saveBooking(Booking booking) {
         String sql = """
                 INSERT INTO bookings
-                (user_id, package_id, start_date, end_date, hotel_type, meal_option, guide_option,
-                 total_amount, booking_status, payment_status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (user_id, package_id, coupon_id, start_date, end_date,
+                 hotel_type, meal_option, guide_option,
+                 subtotal_amount, discount_amount, total_amount,
+                 booking_status, payment_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         return jdbcTemplate.update(sql,
                 booking.getUserId(),
                 booking.getPackageId(),
+                booking.getCouponId(),
                 booking.getStartDate(),
                 booking.getEndDate(),
                 booking.getHotelType(),
                 booking.getMealOption(),
                 booking.getGuideOption(),
+                booking.getSubtotalAmount(),
+                booking.getDiscountAmount(),
                 booking.getTotalAmount(),
                 booking.getBookingStatus(),
                 booking.getPaymentStatus()
@@ -87,13 +102,17 @@ public class BookingDAO {
         return jdbcTemplate.queryForList(sql, Integer.class, bookingId);
     }
 
-    public void cancelBooking(int bookingId) {
+    public void updateBookingStatus(int bookingId, String bookingStatus) {
         String sql = """
                 UPDATE bookings
-                SET booking_status = 'CANCELLED'
+                SET booking_status = ?
                 WHERE booking_id = ?
                 """;
 
-        jdbcTemplate.update(sql, bookingId);
+        jdbcTemplate.update(sql, bookingStatus, bookingId);
+    }
+
+    public void cancelBooking(int bookingId) {
+        updateBookingStatus(bookingId, "CANCELLED");
     }
 }
