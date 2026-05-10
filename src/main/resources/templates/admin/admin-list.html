@@ -57,7 +57,32 @@
                         <td th:text="${admin.adminId}">1</td>
                         <td th:text="${admin.fullName}">Default Admin</td>
                         <td th:text="${admin.email}">admin@gmail.com</td>
-                        <td th:text="${admin.role}">ADMIN</td>
+                        <td>
+                            <span th:if="${admin.role == 'SUPER_ADMIN'}"
+                                style="background-color: #ede9fe;
+                                    color: #5b21b6;
+                                    border: 1px solid #c4b5fd;
+                                    padding: 3px 9px;
+                                    border-radius: 6px;
+                                    font-size: 12px;
+                                    font-weight: 600;
+                                    display: inline-block;">
+                                SUPER ADMIN
+                            </span>
+
+                            <span th:if="${admin.role == 'ADMIN'}"
+                                  style="background-color: #dbeafe;
+                                         color: #1d4ed8;
+                                         border: 1px solid #93c5fd;
+                                         padding: 3px 9px;
+                                         border-radius: 6px;
+                                         font-size: 12px;
+                                         font-weight: 600;
+                                         display: inline-block;">
+                                  ADMIN
+                            </span>
+                        </td>
+
                         <td>
                             <span th:if="${admin.status == 'ACTIVE'}" class="badge bg-success">ACTIVE</span>
                             <span th:if="${admin.status == 'INACTIVE'}" class="badge bg-secondary">INACTIVE</span>
@@ -68,16 +93,24 @@
                         </td>
                         <td th:text="${admin.createdAt}">2026-01-01</td>
                         <td>
-                            <a th:href="@{/admin/edit/{adminId}(adminId=${admin.adminId})}"
+                            <a th:if="${(admin.default and admin.adminId == loggedInAdminId) or (!admin.default and (loggedInAdmin.default or loggedInAdmin.role == 'SUPER_ADMIN'))}"
+                               th:href="@{/admin/edit/{adminId}(adminId=${admin.adminId})}"
                                class="btn btn-sm btn-warning">
                                 Edit
                             </a>
 
-                            <a th:if="${!admin.default and admin.adminId != loggedInAdminId}"
+                            <a th:if="${!admin.default and admin.adminId != loggedInAdminId and admin.status == 'ACTIVE' and (loggedInAdmin.default or loggedInAdmin.role == 'SUPER_ADMIN')}"
                                th:href="@{/admin/delete/{adminId}(adminId=${admin.adminId})}"
                                class="btn btn-sm btn-danger"
                                onclick="return confirm('Are you sure you want to deactivate this admin?');">
                                 Deactivate
+                            </a>
+
+                            <a th:if="${!admin.default and admin.status == 'INACTIVE' and (loggedInAdmin.default or loggedInAdmin.role == 'SUPER_ADMIN')}"
+                               th:href="@{/admin/activate/{adminId}(adminId=${admin.adminId})}"
+                               class="btn btn-sm btn-success"
+                               onclick="return confirm('Are you sure you want to activate this admin?');">
+                                Activate
                             </a>
 
                             <span th:if="${admin.default}" class="text-muted small d-block mt-1">

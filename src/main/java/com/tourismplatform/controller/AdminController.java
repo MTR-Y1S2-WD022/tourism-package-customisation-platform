@@ -79,27 +79,40 @@ public class AdminController {
         List<Admin> admins = adminService.getAllAdmins();
 
         model.addAttribute("admins", admins);
+        model.addAttribute("loggedInAdmin", loggedInAdmin);
         model.addAttribute("loggedInAdminId", loggedInAdmin.getAdminId());
         model.addAttribute("message", message);
 
         return "admin/admin-list";
     }
 
-    @GetMapping("/new")
-    public String showAddAdminForm(HttpSession session, Model model) {
+    @GetMapping("/edit/{adminId}")
+    public String showEditAdminForm(@PathVariable int adminId,
+                                    HttpSession session,
+                                    Model model) {
+
         Admin loggedInAdmin = getLoggedInAdmin(session);
 
         if (loggedInAdmin == null) {
             return "redirect:/admin/login";
         }
 
-        Admin admin = new Admin();
-        admin.setRole("ADMIN");
-        admin.setStatus("ACTIVE");
+        Admin admin = adminService.getAdminById(adminId);
+
+        if (admin == null) {
+            return "redirect:/admin/list?message=Admin not found.";
+        }
+
+        if (!adminService.canEditAdmin(admin, loggedInAdmin)) {
+            return "redirect:/admin/list?message=You do not have permission to edit this admin.";
+        }
+
+        boolean canEditRole = !admin.isDefault() && adminService.canManageAdmins(loggedInAdmin);
 
         model.addAttribute("admin", admin);
-        model.addAttribute("formTitle", "Add New Admin");
-        model.addAttribute("formAction", "/admin/save");
+        model.addAttribute("formTitle", "Edit Admin");
+        model.addAttribute("formAction", "/admin/update");
+        model.addAttribute("canEditRole", canEditRole);
 
         return "admin/admin-form";
     }
@@ -138,26 +151,27 @@ public class AdminController {
         return "redirect:/admin/list?message=Admin saved successfully.";
     }
 
-    @GetMapping("/edit/{adminId}")
-    public String showEditAdminForm(@PathVariable int adminId,
-                                    HttpSession session,
-                                    Model model) {
 
+    @GetMapping("/new")
+    public String showAddAdminForm(HttpSession session, Model model) {
         Admin loggedInAdmin = getLoggedInAdmin(session);
 
         if (loggedInAdmin == null) {
             return "redirect:/admin/login";
         }
 
-        Admin admin = adminService.getAdminById(adminId);
-
-        if (admin == null) {
-            return "redirect:/admin/list?message=Admin not found.";
+        if (!adminService.canManageAdmins(loggedInAdmin)) {
+            return "redirect:/admin/list?message=You do not have permission to add admins.";
         }
 
+        Admin admin = new Admin();
+        admin.setRole("ADMIN");
+        admin.setStatus("ACTIVE");
+
         model.addAttribute("admin", admin);
-        model.addAttribute("formTitle", "Edit Admin");
-        model.addAttribute("formAction", "/admin/update");
+        model.addAttribute("formTitle", "Add New Admin");
+        model.addAttribute("formAction", "/admin/save");
+        model.addAttribute("canEditRole", true);
 
         return "admin/admin-form";
     }
@@ -173,6 +187,30 @@ public class AdminController {
             return "redirect:/admin/login";
         }
 
+        Admin existingAdmin = adminService.getAdminById(admin.getAdminId());
+
+        if (existingAdmin == null) {
+            return "redirect:/admin/list?message=Admin not found.";
+        }
+
+        if (!adminService.canEditAdmin(existingAdmin, loggedInAdmin)) {
+            return "redirect:/admin/list?message=You do not have permission to update this admin.";
+        }
+
+        admin.setStatus(existingAdmin.getStatus());
+
+        // Default Admin must always stay SUPER_ADMIN, ACTIVE, and protected.
+        if (existingAdmin.isDefault()) {
+            admin.setRole("SUPER_ADMIN");
+            admin.setStatus("ACTIVE");
+            admin.setDefault(true);
+        }
+
+        // If role editing is not allowed, keep the old role.
+        if (existingAdmin.isDefault() || !adminService.canManageAdmins(loggedInAdmin)) {
+            admin.setRole(existingAdmin.getRole());
+        }
+
         String validationMessage = adminService.validateAdmin(admin);
 
         if (validationMessage != null) {
@@ -180,6 +218,7 @@ public class AdminController {
             model.addAttribute("admin", admin);
             model.addAttribute("formTitle", "Edit Admin");
             model.addAttribute("formAction", "/admin/update");
+            model.addAttribute("canEditRole", !existingAdmin.isDefault() && adminService.canManageAdmins(loggedInAdmin));
             return "admin/admin-form";
         }
 
@@ -190,6 +229,7 @@ public class AdminController {
             model.addAttribute("admin", admin);
             model.addAttribute("formTitle", "Edit Admin");
             model.addAttribute("formAction", "/admin/update");
+            model.addAttribute("canEditRole", !existingAdmin.isDefault() && adminService.canManageAdmins(loggedInAdmin));
             return "admin/admin-form";
         }
 
@@ -207,6 +247,21 @@ public class AdminController {
         }
 
         String message = adminService.deactivateAdmin(adminId, loggedInAdmin.getAdminId());
+
+        return "redirect:/admin/list?message=" + message;
+    }
+
+    @GetMapping("/activate/{adminId}")
+    public String activateAdmin(@PathVariable int adminId,
+                                HttpSession session) {
+
+        Admin loggedInAdmin = getLoggedInAdmin(session);
+
+        if (loggedInAdmin == null) {
+            return "redirect:/admin/login";
+        }
+
+        String message = adminService.activateAdmin(adminId, loggedInAdmin.getAdminId());
 
         return "redirect:/admin/list?message=" + message;
     }

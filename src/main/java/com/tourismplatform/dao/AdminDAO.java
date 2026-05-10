@@ -54,7 +54,7 @@ public class AdminDAO {
     public List<Admin> findAll() {
         String sql = """
                 SELECT * FROM admins
-                ORDER BY admin_id DESC
+                ORDER BY admin_id ASC
                 """;
 
         return jdbcTemplate.query(sql, adminRowMapper);
@@ -115,12 +115,12 @@ public class AdminDAO {
     }
 
     public int deactivate(int adminId) {
-        String sql = """
-                UPDATE admins
-                SET status = 'INACTIVE'
-                WHERE admin_id = ?
-                """;
+        String sql = "UPDATE admins SET status = 'INACTIVE' WHERE admin_id = ?";
+        return jdbcTemplate.update(sql, adminId);
+    }
 
+    public int activate(int adminId) {
+        String sql = "UPDATE admins SET status = 'ACTIVE' WHERE admin_id = ?";
         return jdbcTemplate.update(sql, adminId);
     }
 }
