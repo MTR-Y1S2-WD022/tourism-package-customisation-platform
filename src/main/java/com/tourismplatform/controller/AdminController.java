@@ -115,6 +115,16 @@ public class AdminController {
             return "redirect:/admin/login";
         }
 
+        String validationMessage = adminService.validateAdmin(admin);
+
+        if (validationMessage != null) {
+            model.addAttribute("errorMessage", validationMessage);
+            model.addAttribute("admin", admin);
+            model.addAttribute("formTitle", "Add New Admin");
+            model.addAttribute("formAction", "/admin/save");
+            return "admin/admin-form";
+        }
+
         boolean saved = adminService.saveAdmin(admin);
 
         if (!saved) {
@@ -161,6 +171,16 @@ public class AdminController {
 
         if (loggedInAdmin == null) {
             return "redirect:/admin/login";
+        }
+
+        String validationMessage = adminService.validateAdmin(admin);
+
+        if (validationMessage != null) {
+            model.addAttribute("errorMessage", validationMessage);
+            model.addAttribute("admin", admin);
+            model.addAttribute("formTitle", "Edit Admin");
+            model.addAttribute("formAction", "/admin/update");
+            return "admin/admin-form";
         }
 
         boolean updated = adminService.updateAdmin(admin);
@@ -241,6 +261,14 @@ public class AdminController {
 
         if (loggedInAdmin == null) {
             return "redirect:/admin/login";
+        }
+
+        String validationMessage = userService.validateUser(user);
+
+        if (validationMessage != null) {
+            model.addAttribute("errorMessage", validationMessage);
+            model.addAttribute("user", user);
+            return "user/user-form";
         }
 
         boolean updated = userService.updateUser(user);
