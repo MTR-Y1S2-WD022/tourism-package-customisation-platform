@@ -28,6 +28,15 @@ public class UserController {
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user, Model model) {
+
+        String validationMessage = userService.validateUser(user);
+
+        if (validationMessage != null) {
+            model.addAttribute("errorMessage", validationMessage);
+            model.addAttribute("user", user);
+            return "user/register";
+        }
+
         boolean registered = userService.registerUser(user);
 
         if (!registered) {
@@ -103,6 +112,14 @@ public class UserController {
         }
 
         user.setUserId(loggedInUser.getUserId());
+
+        String validationMessage = userService.validateUser(user);
+
+        if (validationMessage != null) {
+            model.addAttribute("errorMessage", validationMessage);
+            model.addAttribute("user", user);
+            return "user/profile";
+        }
 
         boolean updated = userService.updateUser(user);
 

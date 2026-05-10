@@ -90,4 +90,49 @@ public class UserService {
             user.setAddress(null);
         }
     }
+
+    public String validateUser(User user) {
+        if (user == null) {
+            return "User details are missing.";
+        }
+
+        if (isBlank(user.getFullName())) {
+            return "Full name is required.";
+        }
+
+        if (isBlank(user.getEmail())) {
+            return "Email is required.";
+        }
+
+        if (!user.getEmail().contains("@")) {
+            return "Please enter a valid email address.";
+        }
+
+        if (isBlank(user.getPassword())) {
+            return "Password is required.";
+        }
+
+        if (user.getPassword().length() < 4) {
+            return "Password must have at least 4 characters.";
+        }
+
+        if (isBlank(user.getPhoneNumber())) {
+            return "Phone number is required.";
+        }
+
+        if (isBlank(user.getStatus())) {
+            return "Status is required.";
+        }
+
+        if (!user.getStatus().equals("ACTIVE") && !user.getStatus().equals("INACTIVE")) {
+            return "Status must be ACTIVE or INACTIVE.";
+        }
+
+        return null;
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
 }
