@@ -92,4 +92,53 @@ public class AdminService {
             admin.setStatus("ACTIVE");
         }
     }
+
+    public String validateAdmin(Admin admin) {
+        if (admin == null) {
+            return "Admin details are missing.";
+        }
+
+        if (isBlank(admin.getFullName())) {
+            return "Full name is required.";
+        }
+
+        if (isBlank(admin.getEmail())) {
+            return "Email is required.";
+        }
+
+        if (!admin.getEmail().contains("@")) {
+            return "Please enter a valid email address.";
+        }
+
+        if (isBlank(admin.getPassword())) {
+            return "Password is required.";
+        }
+
+        if (admin.getPassword().length() < 4) {
+            return "Password must have at least 4 characters.";
+        }
+
+        if (isBlank(admin.getRole())) {
+            return "Role is required.";
+        }
+
+        if (!admin.getRole().equals("ADMIN") && !admin.getRole().equals("SUPER_ADMIN")) {
+            return "Role must be ADMIN or SUPER_ADMIN.";
+        }
+
+        if (isBlank(admin.getStatus())) {
+            return "Status is required.";
+        }
+
+        if (!admin.getStatus().equals("ACTIVE") && !admin.getStatus().equals("INACTIVE")) {
+            return "Status must be ACTIVE or INACTIVE.";
+        }
+
+        return null;
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
 }
