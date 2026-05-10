@@ -114,8 +114,8 @@ public class AdminService {
             return "Password is required.";
         }
 
-        if (admin.getPassword().length() < 4) {
-            return "Password must have at least 4 characters.";
+        if (admin.getPassword().length() < 8) {
+            return "Password must have at least 8 characters.";
         }
 
         if (isBlank(admin.getRole())) {

@@ -112,8 +112,8 @@ public class UserService {
             return "Password is required.";
         }
 
-        if (user.getPassword().length() < 4) {
-            return "Password must have at least 4 characters.";
+        if (user.getPassword().length() < 8) {
+            return "Password must have at least 8 characters.";
         }
 
         if (isBlank(user.getPhoneNumber())) {
