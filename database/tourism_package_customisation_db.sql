@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS bookings (
                                         booking_id INT PRIMARY KEY AUTO_INCREMENT,
                                         user_id INT NOT NULL,
                                         package_id INT NOT NULL,
+                                        coupon_id INT,
 
                                         start_date DATE NOT NULL,
                                         end_date DATE NOT NULL,
@@ -13,10 +14,12 @@ CREATE TABLE IF NOT EXISTS bookings (
     meal_option VARCHAR(50) NOT NULL,
     guide_option VARCHAR(50) NOT NULL,
 
+    subtotal_amount DECIMAL(10,2) NOT NULL,
+    discount_amount DECIMAL(10,2) DEFAULT 0.00,
     total_amount DECIMAL(10,2) NOT NULL,
 
-    booking_status VARCHAR(20) DEFAULT 'PENDING',
-    payment_status VARCHAR(20) DEFAULT 'PENDING',
+    booking_status VARCHAR(30) DEFAULT 'PENDING',
+    payment_status VARCHAR(30) DEFAULT 'PENDING',
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -24,7 +27,10 @@ CREATE TABLE IF NOT EXISTS bookings (
     ON DELETE CASCADE,
 
     FOREIGN KEY (package_id) REFERENCES tour_packages(package_id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (coupon_id) REFERENCES coupons(coupon_id)
+    ON DELETE SET NULL
     );
 
 CREATE TABLE IF NOT EXISTS booking_destinations (
