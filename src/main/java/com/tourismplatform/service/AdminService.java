@@ -47,28 +47,66 @@ public class AdminService {
         return result > 0;
     }
 
-    public String deactivateAdmin(int adminIdToDeactivate, int loggedInAdminId) {
-        Admin adminToDeactivate = adminDAO.findById(adminIdToDeactivate);
+    public String deactivateAdmin(int targetAdminId, int loggedInAdminId) {
+        Admin targetAdmin = adminDAO.findById(targetAdminId);
+        Admin loggedInAdmin = adminDAO.findById(loggedInAdminId);
 
-        if (adminToDeactivate == null) {
+        if (targetAdmin == null) {
             return "Admin not found.";
         }
 
-        if (adminToDeactivate.isDefault()) {
-            return "Default admin cannot be deactivated.";
+        if (loggedInAdmin == null) {
+            return "Logged-in admin not found.";
         }
 
-        if (adminIdToDeactivate == loggedInAdminId) {
+        if (!canManageAdmins(loggedInAdmin)) {
+            return "You do not have permission to deactivate admin accounts.";
+        }
+
+        if (targetAdmin.getAdminId() == loggedInAdmin.getAdminId()) {
             return "You cannot deactivate your own account.";
         }
 
-        int result = adminDAO.deactivate(adminIdToDeactivate);
+        if (targetAdmin.isDefault()) {
+            return "Default admin cannot be deactivated.";
+        }
+
+        int result = adminDAO.deactivate(targetAdminId);
 
         if (result > 0) {
             return "Admin deactivated successfully.";
         }
 
         return "Failed to deactivate admin.";
+    }
+
+    public String activateAdmin(int targetAdminId, int loggedInAdminId) {
+        Admin targetAdmin = adminDAO.findById(targetAdminId);
+        Admin loggedInAdmin = adminDAO.findById(loggedInAdminId);
+
+        if (targetAdmin == null) {
+            return "Admin not found.";
+        }
+
+        if (loggedInAdmin == null) {
+            return "Logged-in admin not found.";
+        }
+
+        if (!canManageAdmins(loggedInAdmin)) {
+            return "You do not have permission to activate admin accounts.";
+        }
+
+        if (targetAdmin.isDefault()) {
+            return "Default admin is already protected as ACTIVE.";
+        }
+
+        int result = adminDAO.activate(targetAdminId);
+
+        if (result > 0) {
+            return "Admin activated successfully.";
+        }
+
+        return "Failed to activate admin.";
     }
 
     private void prepareAdminBeforeSave(Admin admin) {
@@ -92,4 +130,76 @@ public class AdminService {
             admin.setStatus("ACTIVE");
         }
     }
+
+    public String validateAdmin(Admin admin) {
+        if (admin == null) {
+            return "Admin details are missing.";
+        }
+
+        if (isBlank(admin.getFullName())) {
+            return "Full name is required.";
+        }
+
+        if (isBlank(admin.getEmail())) {
+            return "Email is required.";
+        }
+
+        if (!admin.getEmail().contains("@")) {
+            return "Please enter a valid email address.";
+        }
+
+        if (isBlank(admin.getPassword())) {
+            return "Password is required.";
+        }
+
+        if (admin.getPassword().length() < 8) {
+            return "Password must have at least 8 characters.";
+        }
+
+        if (isBlank(admin.getRole())) {
+            return "Role is required.";
+        }
+
+        if (!admin.getRole().equals("ADMIN") && !admin.getRole().equals("SUPER_ADMIN")) {
+            return "Role must be ADMIN or SUPER_ADMIN.";
+        }
+
+        if (isBlank(admin.getStatus())) {
+            return "Status is required.";
+        }
+
+        if (!admin.getStatus().equals("ACTIVE") && !admin.getStatus().equals("INACTIVE")) {
+            return "Status must be ACTIVE or INACTIVE.";
+        }
+
+        return null;
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    public boolean canManageAdmins(Admin loggedInAdmin) {
+        if (loggedInAdmin == null) {
+            return false;
+        }
+
+        return loggedInAdmin.isDefault() || "SUPER_ADMIN".equals(loggedInAdmin.getRole());
+    }
+
+    public boolean canEditAdmin(Admin targetAdmin, Admin loggedInAdmin) {
+        if (targetAdmin == null || loggedInAdmin == null) {
+            return false;
+        }
+
+        if (targetAdmin.isDefault()) {
+            return loggedInAdmin.isDefault()
+                    && targetAdmin.getAdminId() == loggedInAdmin.getAdminId();
+        }
+
+        return canManageAdmins(loggedInAdmin);
+    }
+
+
+
 }

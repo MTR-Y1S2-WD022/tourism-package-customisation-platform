@@ -24,9 +24,19 @@ CREATE TABLE IF NOT EXISTS admins (
             'Default Admin',
             'admin@gmail.com',
             'admin123',
-            'ADMIN',
+            'SUPER_ADMIN',
             'ACTIVE',
             TRUE
         );
 
-    SELECT * FROM admins;
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+    address VARCHAR(255),
+    profile_image VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'ACTIVE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
