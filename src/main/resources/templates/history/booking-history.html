@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Booking History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body style="background-color: #f8f9fa;">
+
+<div class="container mt-5">
+
+    <div class="mb-4">
+        <h1 class="text-primary">Booking History</h1>
+        <p class="text-muted">View your bookings, payment status, tour status, and review options.</p>
+    </div>
+
+    <div th:if="${selectedBooking != null}" class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            Selected Booking Details
+        </div>
+
+        <div class="card-body">
+            <p><strong>Booking ID:</strong> <span th:text="${selectedBooking.bookingId}">1</span></p>
+            <p><strong>Package:</strong> <span th:text="${selectedBooking.packageName}">Package Name</span></p>
+            <p><strong>Start Date:</strong> <span th:text="${selectedBooking.startDate}">2026-01-01</span></p>
+            <p><strong>End Date:</strong> <span th:text="${selectedBooking.endDate}">2026-01-05</span></p>
+            <p><strong>Booking Status:</strong> <span th:text="${selectedBooking.bookingStatus}">APPROVED</span></p>
+            <p><strong>Payment Status:</strong> <span th:text="${selectedBooking.paymentStatus}">PAID</span></p>
+            <p><strong>Tour Status:</strong> <span th:text="${selectedBooking.tourStatus}">COMPLETED</span></p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            My Bookings
+        </div>
+
+        <div class="card-body">
+
+            <div th:if="${bookings == null or bookings.isEmpty()}" class="alert alert-info">
+                No bookings found.
+            </div>
+
+            <div class="table-responsive" th:if="${bookings != null and !bookings.isEmpty()}">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Package</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Booking Status</th>
+                        <th>Payment Status</th>
+                        <th>Tour Status</th>
+                        <th>Review</th>
+                        <th>Details</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="booking : ${bookings}">
+                        <td th:text="${booking.bookingId}">1</td>
+                        <td th:text="${booking.packageName}">Package Name</td>
+                        <td th:text="${booking.startDate}">2026-01-01</td>
+                        <td th:text="${booking.endDate}">2026-01-05</td>
+
+                        <td>
+                            <span class="badge bg-secondary" th:text="${booking.bookingStatus}">APPROVED</span>
+                        </td>
+
+                        <td>
+                            <span class="badge bg-info text-dark" th:text="${booking.paymentStatus}">PAID</span>
+                        </td>
+
+                        <td>
+                            <span class="badge bg-success"
+                                  th:if="${booking.tourStatus == 'COMPLETED'}"
+                                  th:text="${booking.tourStatus}">COMPLETED</span>
+
+                            <span class="badge bg-warning text-dark"
+                                  th:if="${booking.tourStatus == 'UPCOMING'}"
+                                  th:text="${booking.tourStatus}">UPCOMING</span>
+
+                            <span class="badge bg-primary"
+                                  th:if="${booking.tourStatus == 'ONGOING'}"
+                                  th:text="${booking.tourStatus}">ONGOING</span>
+
+                            <span class="badge bg-danger"
+                                  th:if="${booking.tourStatus == 'CANCELLED'}"
+                                  th:text="${booking.tourStatus}">CANCELLED</span>
+
+                            <span class="badge bg-dark"
+                                  th:if="${booking.tourStatus == 'UNKNOWN'}"
+                                  th:text="${booking.tourStatus}">UNKNOWN</span>
+                        </td>
+
+                        <td>
+                            <a th:if="${booking.canReview}"
+                               th:href="@{/reviews/new/{bookingId}(bookingId=${booking.bookingId})}"
+                               class="btn btn-sm btn-primary">
+                                Add Review
+                            </a>
+
+                            <span th:unless="${booking.canReview}" class="text-muted">
+                                Not available
+                            </span>
+                        </td>
+
+                        <td>
+                            <a th:href="@{/history/bookings/{bookingId}(bookingId=${booking.bookingId})}"
+                               class="btn btn-sm btn-outline-secondary">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="/" class="btn btn-outline-primary">Back to Home</a>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
