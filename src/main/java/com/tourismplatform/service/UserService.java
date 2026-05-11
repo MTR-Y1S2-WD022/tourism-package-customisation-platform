@@ -63,6 +63,22 @@ public class UserService {
         return "Failed to deactivate user.";
     }
 
+    public String activateUser(int userId) {
+        User user = userDAO.findById(userId);
+
+        if (user == null) {
+            return "User not found.";
+        }
+
+        int result = userDAO.activate(userId);
+
+        if (result > 0) {
+            return "User activated successfully.";
+        }
+
+        return "Failed to activate user.";
+    }
+
     private void prepareUserBeforeSave(User user) {
         if (user.getStatus() == null || user.getStatus().trim().isEmpty()) {
             user.setStatus("ACTIVE");

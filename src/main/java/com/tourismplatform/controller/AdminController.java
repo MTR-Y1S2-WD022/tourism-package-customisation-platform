@@ -318,6 +318,16 @@ public class AdminController {
             return "redirect:/admin/login";
         }
 
+        User existingUser = userService.getUserById(user.getUserId());
+
+        if (existingUser == null) {
+            return "redirect:/admin/users?message=User not found.";
+        }
+
+        // Status is controlled only from the User List Activate / Deactivate buttons.
+        // So when editing user details, keep the old database status.
+        user.setStatus(existingUser.getStatus());
+
         String validationMessage = userService.validateUser(user);
 
         if (validationMessage != null) {
@@ -360,5 +370,20 @@ public class AdminController {
         }
 
         return (Admin) adminObject;
+    }
+
+    @GetMapping("/users/activate/{userId}")
+    public String activateUserByAdmin(@PathVariable int userId,
+                                      HttpSession session) {
+
+        Admin loggedInAdmin = getLoggedInAdmin(session);
+
+        if (loggedInAdmin == null) {
+            return "redirect:/admin/login";
+        }
+
+        String message = userService.activateUser(userId);
+
+        return "redirect:/admin/users?message=" + message;
     }
 }

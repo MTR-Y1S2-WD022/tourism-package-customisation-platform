@@ -62,8 +62,29 @@
                         <td th:text="${user.address}">Address</td>
                         <td th:text="${user.profileImage}">user1.jpg</td>
                         <td>
-                            <span th:if="${user.status == 'ACTIVE'}" class="badge bg-success">ACTIVE</span>
-                            <span th:if="${user.status == 'INACTIVE'}" class="badge bg-secondary">INACTIVE</span>
+                            <span th:if="${user.status == 'ACTIVE'}"
+                                  style="background-color: #dcfce7;
+                                         color: #166534;
+                                         border: 1px solid #86efac;
+                                         padding: 3px 9px;
+                                         border-radius: 6px;
+                                         font-size: 12px;
+                                         font-weight: 600;
+                                         display: inline-block;">
+                                ACTIVE
+                            </span>
+
+                            <span th:if="${user.status == 'INACTIVE'}"
+                                  style="background-color: #fee2e2;
+                                         color: #991b1b;
+                                         border: 1px solid #fca5a5;
+                                         padding: 3px 9px;
+                                         border-radius: 6px;
+                                         font-size: 12px;
+                                         font-weight: 600;
+                                         display: inline-block;">
+                                    INACTIVE
+                            </span>
                         </td>
                         <td th:text="${user.createdAt}">2026-01-01</td>
                         <td>
@@ -79,9 +100,12 @@
                                 Deactivate
                             </a>
 
-                            <span th:if="${user.status == 'INACTIVE'}" class="text-muted small d-block mt-1">
-                                Already inactive
-                            </span>
+                            <a th:if="${user.status == 'INACTIVE'}"
+                               th:href="@{/admin/users/activate/{userId}(userId=${user.userId})}"
+                               class="btn btn-sm btn-success"
+                               onclick="return confirm('Are you sure you want to activate this user?');">
+                                Activate
+                            </a>
                         </td>
                     </tr>
 

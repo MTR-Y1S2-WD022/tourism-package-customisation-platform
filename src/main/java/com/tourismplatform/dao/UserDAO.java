@@ -121,12 +121,14 @@ public class UserDAO {
     }
 
     public int deactivate(int userId) {
-        String sql = """
-                UPDATE users
-                SET status = 'INACTIVE'
-                WHERE user_id = ?
-                """;
-
+        String sql = "UPDATE users SET status = 'INACTIVE' WHERE user_id = ?";
         return jdbcTemplate.update(sql, userId);
     }
+
+    public int activate(int userId) {
+        String sql = "UPDATE users SET status = 'ACTIVE' WHERE user_id = ?";
+        return jdbcTemplate.update(sql, userId);
+    }
+
+
 }
