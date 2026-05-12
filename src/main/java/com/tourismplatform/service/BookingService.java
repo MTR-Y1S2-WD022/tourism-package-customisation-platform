@@ -132,4 +132,23 @@ public class BookingService {
     public void cancelBooking(int bookingId) {
         bookingDAO.cancelBooking(bookingId);
     }
+
+
+    
+    // googl map......
+
+
+
+    public String generateGoogleMapsUrl(List<String> destinationNames) {
+        String baseUrl = "https://www.google.com/maps/search/?api=1&query=";
+
+        if (destinationNames == null || destinationNames.isEmpty()) {
+            return baseUrl;
+        }
+
+        String query = String.join(" ", destinationNames);
+        String formattedQuery = query.replace(" ", "+");
+
+        return baseUrl + formattedQuery;
+    }
 }
