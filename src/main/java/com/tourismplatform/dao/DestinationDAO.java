@@ -60,7 +60,7 @@ public class DestinationDAO {
 
         return jdbcTemplate.query(sql, destinationRowMapper);
     }
-    
+
     public Destination getDestinationById(int destinationId) {
         String sql = """
                 SELECT * FROM destinations

@@ -48,18 +48,47 @@
                     <td th:text="${pkg.packageName}">Sample Package</td>
                     <td th:text="${pkg.locationArea}">Galle</td>
                     <td th:text="${pkg.basePrice}">45000.00</td>
+                    
+
                     <td>
-                        <span class="badge bg-success" th:text="${pkg.status}">ACTIVE</span>
+                    <td>
+                        <span th:if="${pkg.status == 'ACTIVE'}"
+                                class="badge bg-success">
+                                ACTIVE
+                        </span>
+
+                        <span th:if="${pkg.status == 'INACTIVE'}"
+                              class="badge bg-secondary">
+                              INACTIVE
+                         </span>
                     </td>
+
                     <td>
-                        <a class="btn btn-info btn-sm" th:href="@{/packages/view/{id}(id=${pkg.packageId})}">View</a>
-                        <a class="btn btn-warning btn-sm" th:href="@{/packages/edit/{id}(id=${pkg.packageId})}">Edit</a>
-                        <a class="btn btn-danger btn-sm"
+                        <a class="btn btn-info btn-sm"
+                           th:href="@{/packages/view/{id}(id=${pkg.packageId})}">
+                            View
+                        </a>
+
+                        <a class="btn btn-warning btn-sm"
+                           th:href="@{/packages/edit/{id}(id=${pkg.packageId})}">
+                            Edit
+                        </a>
+
+                        <a th:if="${pkg.status == 'ACTIVE'}"
+                           class="btn btn-danger btn-sm"
                            th:href="@{/packages/delete/{id}(id=${pkg.packageId})}"
                            onclick="return confirm('Are you sure you want to deactivate this package?');">
                             Deactivate
                         </a>
+
+                        <a th:if="${pkg.status == 'INACTIVE'}"
+                           class="btn btn-success btn-sm"
+                           th:href="@{/packages/activate/{id}(id=${pkg.packageId})}"
+                           onclick="return confirm('Are you sure you want to activate this package?');">
+                            Activate
+                        </a>
                     </td>
+
                 </tr>
 
                 <tr th:if="${#lists.isEmpty(packages)}">
