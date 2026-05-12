@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Review Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body style="background-color: #f8f9fa;">
+
+<div class="container mt-5">
+
+    <div class="mb-4">
+        <h1 class="text-primary">Admin Review Management</h1>
+        <p class="text-muted">View, hide, show, or delete user reviews.</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <span>All Reviews</span>
+            <a href="/reviews" class="btn btn-sm btn-light">View Public Reviews</a>
+        </div>
+
+        <div class="card-body">
+
+            <div th:if="${reviews == null or reviews.isEmpty()}" class="alert alert-info">
+                No reviews found.
+            </div>
+
+            <div class="table-responsive" th:if="${reviews != null and !reviews.isEmpty()}">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Review ID</th>
+                        <th>Booking ID</th>
+                        <th>User ID</th>
+                        <th>Package ID</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Status</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="review : ${reviews}">
+                        <td th:text="${review.reviewId}">1</td>
+                        <td th:text="${review.bookingId}">1</td>
+                        <td th:text="${review.userId}">1</td>
+                        <td th:text="${review.packageId}">1</td>
+
+                        <td>
+                            <span class="text-warning fw-bold"
+                                  th:text="${#strings.repeat('⭐', review.rating)}">⭐⭐⭐⭐⭐</span>
+                            <span class="text-muted" th:text="'(' + ${review.rating} + '/5)'">(5/5)</span>
+                        </td>
+
+                        <td th:text="${review.comment}">Excellent tour package.</td>
+
+                        <td>
+                            <span th:if="${review.status == 'VISIBLE'}"
+                                  class="badge bg-success"
+                                  th:text="${review.status}">VISIBLE</span>
+
+                            <span th:if="${review.status == 'HIDDEN'}"
+                                  class="badge bg-secondary"
+                                  th:text="${review.status}">HIDDEN</span>
+                        </td>
+
+                        <td th:text="${review.createdAt}">2026-05-01T10:30</td>
+
+                        <td>
+                            <a th:if="${review.status == 'VISIBLE'}"
+                               th:href="@{/admin/reviews/hide/{reviewId}(reviewId=${review.reviewId})}"
+                               class="btn btn-sm btn-warning">
+                                Hide
+                            </a>
+
+                            <a th:if="${review.status == 'HIDDEN'}"
+                               th:href="@{/admin/reviews/show/{reviewId}(reviewId=${review.reviewId})}"
+                               class="btn btn-sm btn-success">
+                                Show
+                            </a>
+
+                            <a th:href="@{/admin/reviews/delete/{reviewId}(reviewId=${review.reviewId})}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this review?');">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <a href="/" class="btn btn-outline-primary">Back to Home</a>
+        <a href="/reviews" class="btn btn-primary">View Public Reviews</a>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
