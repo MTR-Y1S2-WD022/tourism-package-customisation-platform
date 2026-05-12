@@ -135,9 +135,7 @@ public class BookingService {
 
 
     
-    // googl map......
-
-
+    // Google Map Link
 
     public String generateGoogleMapsUrl(List<String> destinationNames) {
         String baseUrl = "https://www.google.com/maps/search/?api=1&query=";
