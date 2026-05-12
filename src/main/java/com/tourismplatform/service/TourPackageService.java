@@ -34,6 +34,9 @@ public class TourPackageService {
     public int deactivateTourPackage(int packageId) {
         return tourPackageDAO.deactivateTourPackage(packageId);
     }
+    public int activateTourPackage(int packageId) {
+        return tourPackageDAO.activateTourPackage(packageId);
+    }
 
     public List<Integer> getAssignedDestinationIds(int packageId) {
         return tourPackageDAO.getAssignedDestinationIds(packageId);
