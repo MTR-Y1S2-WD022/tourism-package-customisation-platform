@@ -3,9 +3,14 @@ package com.tourismplatform.dao;
 import com.tourismplatform.model.Booking;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.List;
 
 @Repository
@@ -60,21 +65,41 @@ public class BookingDAO {
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
-        return jdbcTemplate.update(sql,
-                booking.getUserId(),
-                booking.getPackageId(),
-                booking.getCouponId(),
-                booking.getStartDate(),
-                booking.getEndDate(),
-                booking.getHotelType(),
-                booking.getMealOption(),
-                booking.getGuideOption(),
-                booking.getSubtotalAmount(),
-                booking.getDiscountAmount(),
-                booking.getTotalAmount(),
-                booking.getBookingStatus(),
-                booking.getPaymentStatus()
-        );
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            ps.setInt(1, booking.getUserId());
+            ps.setInt(2, booking.getPackageId());
+
+            if (booking.getCouponId() == null) {
+                ps.setNull(3, Types.INTEGER);
+            } else {
+                ps.setInt(3, booking.getCouponId());
+            }
+
+            ps.setDate(4, java.sql.Date.valueOf(booking.getStartDate()));
+            ps.setDate(5, java.sql.Date.valueOf(booking.getEndDate()));
+            ps.setString(6, booking.getHotelType());
+            ps.setString(7, booking.getMealOption());
+            ps.setString(8, booking.getGuideOption());
+            ps.setBigDecimal(9, booking.getSubtotalAmount());
+            ps.setBigDecimal(10, booking.getDiscountAmount());
+            ps.setBigDecimal(11, booking.getTotalAmount());
+            ps.setString(12, booking.getBookingStatus());
+            ps.setString(13, booking.getPaymentStatus());
+
+            return ps;
+        }, keyHolder);
+
+        Number generatedId = keyHolder.getKey();
+
+        if (generatedId == null) {
+            return 0;
+        }
+
+        return generatedId.intValue();
     }
 
     public void saveBookingDestination(int bookingId, int destinationId) {
