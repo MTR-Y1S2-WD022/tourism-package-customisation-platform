@@ -54,13 +54,13 @@ public class DestinationDAO {
 
     public List<Destination> getAllActiveDestinations() {
         String sql = """
-                SELECT * FROM destinations
-                WHERE status = 'ACTIVE'
-                ORDER BY destination_id DESC
-                """;
+            SELECT * FROM destinations
+            ORDER BY destination_id DESC
+            """;
 
         return jdbcTemplate.query(sql, destinationRowMapper);
     }
+    
 
     public Destination getDestinationById(int destinationId) {
         String sql = """

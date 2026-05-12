@@ -57,10 +57,9 @@ public class TourPackageDAO {
 
     public List<TourPackage> getAllActivePackages() {
         String sql = """
-                SELECT * FROM tour_packages
-                WHERE status = 'ACTIVE'
-                ORDER BY package_id DESC
-                """;
+            SELECT * FROM tour_packages
+            ORDER BY package_id DESC
+            """;
 
         return jdbcTemplate.query(sql, tourPackageRowMapper);
     }
