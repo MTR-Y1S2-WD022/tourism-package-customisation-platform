@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 public class CouponController {
@@ -19,9 +20,9 @@ public class CouponController {
     }
 
     @GetMapping("/admin/coupons")
-    public String viewCoupons(Model model) {
-        model.addAttribute("coupons", couponService.getAllCoupons());
-        return "coupon/coupon-list";
+    public String redirectToCouponDashboard() {
+
+        return "redirect:/admin/coupons/dashboard";
     }
 
     @GetMapping("/admin/coupons/new")
@@ -77,5 +78,33 @@ public class CouponController {
         BigDecimal finalTotal = couponService.calculateFinalTotal(subtotalAmount, discountAmount);
 
         return "VALID | Discount: " + discountAmount + " | Final Total: " + finalTotal;
+    }
+    @GetMapping("/admin/coupons/dashboard")
+    public String couponDashboard(Model model) {
+        List<Coupon> coupons = couponService.getAllCoupons();
+
+        long totalCoupons = coupons.size();
+        long activeCoupons = coupons.stream()
+                .filter(coupon -> "ACTIVE".equalsIgnoreCase(coupon.getStatus()))
+                .count();
+        long expiredCoupons = coupons.stream()
+                .filter(coupon -> "EXPIRED".equalsIgnoreCase(coupon.getStatus()))
+                .count();
+        long cancelledCoupons = coupons.stream()
+                .filter(coupon -> "CANCELLED".equalsIgnoreCase(coupon.getStatus()))
+                .count();
+
+        model.addAttribute("totalCoupons", totalCoupons);
+        model.addAttribute("activeCoupons", activeCoupons);
+        model.addAttribute("expiredCoupons", expiredCoupons);
+        model.addAttribute("cancelledCoupons", cancelledCoupons);
+
+        return "coupon/coupon-dashboard";
+
+    }
+    @GetMapping("/admin/coupons/list")
+    public String viewCouponsList(Model model) {
+        model.addAttribute("coupons", couponService.getAllCoupons());
+        return "coupon/coupon-list";
     }
 }
