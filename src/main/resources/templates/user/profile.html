@@ -33,6 +33,22 @@
 
                 <div class="card-body">
 
+                    <div class="text-center mb-3">
+                        <img th:if="${user.profileImage != null and !user.profileImage.isEmpty()}"
+                             th:src="${user.profileImage}"
+                             alt="Profile Image"
+                             width="120"
+                             height="120"
+                             style="object-fit: cover; border-radius: 50%; border: 2px solid #0d6efd;">
+
+                        <img th:if="${user.profileImage == null or user.profileImage.isEmpty()}"
+                             th:src="@{/images/default-user.png}"
+                             alt="Default Profile Image"
+                             width="120"
+                             height="120"
+                             style="object-fit: cover; border-radius: 50%; border: 2px solid #0d6efd;">
+                    </div>
+
                     <div th:if="${param.message}" class="alert alert-success">
                         <span th:text="${param.message}"></span>
                     </div>
@@ -96,7 +112,7 @@
                                    class="form-control"
                                    id="profileImage"
                                    th:field="*{profileImage}"
-                                   placeholder="Example: user1.jpg">
+                                   placeholder="/images/default-user.png">
                         </div>
 
                         <div class="d-flex justify-content-between">
