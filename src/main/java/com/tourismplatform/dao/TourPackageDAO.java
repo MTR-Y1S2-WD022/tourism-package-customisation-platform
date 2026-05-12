@@ -106,6 +106,17 @@ public class TourPackageDAO {
 
         return jdbcTemplate.update(sql, packageId);
     }
+
+    public int activateTourPackage(int packageId) {
+        String sql = """
+            UPDATE tour_packages
+            SET status = 'ACTIVE'
+            WHERE package_id = ?
+            """;
+
+        return jdbcTemplate.update(sql, packageId);
+    }
+
     public List<Integer> getAssignedDestinationIds(int packageId) {
         String sql = """
             SELECT destination_id
