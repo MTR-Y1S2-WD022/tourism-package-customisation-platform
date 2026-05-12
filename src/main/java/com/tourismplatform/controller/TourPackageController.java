@@ -61,6 +61,12 @@ public class TourPackageController {
         tourPackageService.deactivateTourPackage(packageId);
         return "redirect:/packages";
     }
+    @GetMapping("/packages/activate/{packageId}")
+    public String activatePackage(@PathVariable int packageId) {
+        tourPackageService.activateTourPackage(packageId);
+        return "redirect:/packages";
+    }
+
     @GetMapping("/packages/{packageId}/assign-destinations")
     public String showAssignDestinationsPage(@PathVariable int packageId, Model model) {
         model.addAttribute("tourPackage", tourPackageService.getTourPackageById(packageId));
