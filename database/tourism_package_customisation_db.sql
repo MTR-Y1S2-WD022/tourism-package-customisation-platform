@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS tourism_package_customisation_db;
+    USE tourism_package_customisation_db;
+
+
 CREATE TABLE tour_packages (
                                package_id INT PRIMARY KEY AUTO_INCREMENT,
                                package_name VARCHAR(100) NOT NULL,
