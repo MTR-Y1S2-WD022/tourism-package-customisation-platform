@@ -44,3 +44,30 @@ CREATE TABLE IF NOT EXISTS booking_destinations (
     FOREIGN KEY (destination_id) REFERENCES destinations(destination_id)
     ON DELETE CASCADE
     );
+
+CREATE TABLE IF NOT EXISTS booking_cancellation_requests (
+                                                             request_id INT PRIMARY KEY AUTO_INCREMENT,
+                                                             booking_id INT NOT NULL,
+                                                             user_id INT NOT NULL,
+
+                                                             reason TEXT NOT NULL,
+                                                             request_status VARCHAR(20) DEFAULT 'PENDING',
+
+    admin_id INT,
+    admin_response TEXT,
+
+    refund_type VARCHAR(20) DEFAULT 'NONE',
+    refund_amount DECIMAL(10,2) DEFAULT 0.00,
+
+    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    processed_at TIMESTAMP NULL,
+
+    FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (admin_id) REFERENCES admins(admin_id)
+    ON DELETE SET NULL
+    );
