@@ -42,7 +42,6 @@ public class AdminController {
             return "admin/admin-login";
         }
 
-        // 🔥 POLYMORPHISM
         Person person = admin;
 
         session.setAttribute("loggedInAdmin", admin);

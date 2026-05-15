@@ -68,14 +68,13 @@ public class UserController {
             model.addAttribute("errorMessage", "Invalid email, password, or inactive user account.");
             return "user/login";
         }
-
-        // 🔥 POLYMORPHISM STARTS HERE
+        
         Person person = user;
 
         session.setAttribute("loggedInUser", person);
         session.setAttribute("loggedInUserId", user.getUserId());
 
-        // 🔥 SAME METHOD CALL
+
         String dashboard = person.getDashboardPath();
 
         return "redirect:" + dashboard;
