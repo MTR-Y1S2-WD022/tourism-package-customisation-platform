@@ -42,4 +42,10 @@ public class Admin extends Person {
     public void setDefault(boolean aDefault) {
         isDefault = aDefault;
     }
+
+    @Override
+    public String getDashboardPath() {
+        return "/admin/dashboard";
+    }
+
 }

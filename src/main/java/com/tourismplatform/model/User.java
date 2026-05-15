@@ -53,4 +53,10 @@ public class User extends Person {
     public void setProfileImage(String profileImage) {
         this.profileImage = profileImage;
     }
+
+    @Override
+    public String getDashboardPath() {
+        return "/user/dashboard";
+    }
+
 }

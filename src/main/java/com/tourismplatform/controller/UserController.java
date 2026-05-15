@@ -1,5 +1,6 @@
 package com.tourismplatform.controller;
 
+import com.tourismplatform.model.Person;
 import com.tourismplatform.model.User;
 import com.tourismplatform.service.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -68,10 +69,16 @@ public class UserController {
             return "user/login";
         }
 
-        session.setAttribute("loggedInUser", user);
+        // 🔥 POLYMORPHISM STARTS HERE
+        Person person = user;
+
+        session.setAttribute("loggedInUser", person);
         session.setAttribute("loggedInUserId", user.getUserId());
 
-        return "redirect:/user/profile";
+        // 🔥 SAME METHOD CALL
+        String dashboard = person.getDashboardPath();
+
+        return "redirect:" + dashboard;
     }
 
     @GetMapping("/logout")
@@ -133,6 +140,20 @@ public class UserController {
         session.setAttribute("loggedInUser", updatedUser);
 
         return "redirect:/user/profile?message=Profile updated successfully.";
+    }
+
+    @GetMapping("/user/dashboard")
+    public String showUserDashboard(HttpSession session, Model model) {
+
+        User user = getLoggedInUser(session);
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("user", user);
+
+        return "user/dashboard";
     }
 
     private User getLoggedInUser(HttpSession session) {

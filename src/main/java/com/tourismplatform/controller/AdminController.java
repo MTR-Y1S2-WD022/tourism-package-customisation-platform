@@ -1,6 +1,7 @@
 package com.tourismplatform.controller;
 
 import com.tourismplatform.model.Admin;
+import com.tourismplatform.model.Person;
 import com.tourismplatform.model.User;
 import com.tourismplatform.service.AdminService;
 import com.tourismplatform.service.UserService;
@@ -41,10 +42,14 @@ public class AdminController {
             return "admin/admin-login";
         }
 
-        session.setAttribute("loggedInAdmin", admin);
-        session.setAttribute("loggedInAdminId", admin.getAdminId());
+        // 🔥 POLYMORPHISM
+        Person person = admin;
 
-        return "redirect:/admin/dashboard";
+        session.setAttribute("loggedInAdmin", admin);
+
+        String dashboard = person.getDashboardPath();
+
+        return "redirect:" + dashboard;
     }
 
     @GetMapping("/logout")

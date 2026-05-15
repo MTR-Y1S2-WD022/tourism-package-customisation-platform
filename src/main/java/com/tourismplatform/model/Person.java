@@ -60,4 +60,9 @@ public class Person {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public String getDashboardPath() {
+        return "/home";
+    }
+
 }
