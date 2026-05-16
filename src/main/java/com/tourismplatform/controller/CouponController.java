@@ -1,14 +1,17 @@
 package com.tourismplatform.controller;
 
+import com.tourismplatform.model.PercentageCoupon;
 import com.tourismplatform.model.Coupon;
+
 import com.tourismplatform.service.CouponService;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
+
 import java.util.List;
+
 
 @Controller
 public class CouponController {
@@ -27,12 +30,12 @@ public class CouponController {
 
     @GetMapping("/admin/coupons/new")
     public String showAddCouponForm(Model model) {
-        model.addAttribute("coupon", new Coupon());
+        model.addAttribute("coupon", new PercentageCoupon());
         return "coupon/coupon-form";
     }
 
     @PostMapping("/admin/coupons/save")
-    public String saveCoupon(@ModelAttribute Coupon coupon) {
+    public String saveCoupon(@ModelAttribute PercentageCoupon coupon) {
         couponService.addCoupon(coupon);
         return "redirect:/admin/coupons";
     }
@@ -66,7 +69,7 @@ public class CouponController {
     @GetMapping("/coupons/validate")
     @ResponseBody
     public String validateCoupon(@RequestParam String couponCode,
-                                 @RequestParam BigDecimal subtotalAmount) {
+                                 @RequestParam double subtotalAmount) {
 
         Coupon coupon = couponService.findCouponByCode(couponCode);
 
@@ -74,8 +77,9 @@ public class CouponController {
             return "INVALID";
         }
 
-        BigDecimal discountAmount = couponService.calculateDiscountAmount(coupon, subtotalAmount);
-        BigDecimal finalTotal = couponService.calculateFinalTotal(subtotalAmount, discountAmount);
+        double discountAmount = couponService.calculateDiscountAmount(coupon, subtotalAmount);
+        double finalTotal = couponService.calculateFinalTotal(subtotalAmount, discountAmount);
+
 
         return "VALID | Discount: " + discountAmount + " | Final Total: " + finalTotal;
     }
