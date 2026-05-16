@@ -1,5 +1,5 @@
 package com.tourismplatform.service;
-
+import com.tourismplatform.model.*;
 import com.tourismplatform.dao.TourPackageDAO;
 import com.tourismplatform.model.TourPackage;
 import org.springframework.stereotype.Service;
@@ -55,4 +55,22 @@ public class TourPackageService {
     public List<Destination> getDestinationsByPackageId(int packageId) {
         return tourPackageDAO.getDestinationsByPackageId(packageId);
     }
+
+
+    
+        public String getDestinationStatus(int packageId) {
+
+            int count = tourPackageDAO.countDestinations(packageId);
+
+            TourPackage pkg;
+
+            if (count > 0) {
+                pkg = new PackageWithDestinations();
+            } else {
+                pkg = new PackageWithoutDestinations();
+            }
+
+            return pkg.getDestinationStatus();
+        }
+
 }
