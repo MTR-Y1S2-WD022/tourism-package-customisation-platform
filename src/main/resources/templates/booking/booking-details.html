@@ -124,6 +124,12 @@
 
             <div class="d-flex justify-content-between mt-4">
                 <a href="/" class="btn btn-secondary">Back to Home</a>
+
+                <a th:href="@{/cancellation/request/{bookingId}(bookingId=${booking.bookingId})}"
+                   class="btn btn-danger mt-3">
+                    Cancel Booking
+                    
+                </a>
                 <a href="/admin/bookings" class="btn btn-primary">Admin Booking List</a>
             </div>
 
