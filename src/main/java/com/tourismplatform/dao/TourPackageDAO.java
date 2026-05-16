@@ -174,6 +174,14 @@ public class TourPackageDAO {
             return destination;
         }, packageId);
     }
+    public int countDestinations(int packageId) {
+        String sql = """
+        SELECT COUNT(*)
+        FROM package_destinations
+        WHERE package_id = ?
+    """;
 
+        return jdbcTemplate.queryForObject(sql, Integer.class, packageId);
+    }
 }
 
