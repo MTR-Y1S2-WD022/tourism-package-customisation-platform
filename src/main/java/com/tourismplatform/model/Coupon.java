@@ -4,22 +4,25 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public class Coupon {
+public abstract class Coupon {
 
     private int couponId;
     private String couponCode;
     private String discountType;
-    private BigDecimal discountValue;
+    private double discountValue;
     private LocalDate issueDate;
     private LocalDate expiryDate;
     private String status;
     private Integer createdByAdminId;
     private LocalDateTime createdAt;
 
+    public static final String ACTIVE = "ACTIVE";
+    public static final String EXPIRED = "EXPIRED";
+
     public Coupon() {
     }
 
-    public Coupon(int couponId, String couponCode, String discountType, BigDecimal discountValue,
+    public Coupon(int couponId, String couponCode, String discountType, double discountValue,
                   LocalDate issueDate, LocalDate expiryDate, String status,
                   Integer createdByAdminId, LocalDateTime createdAt) {
         this.couponId = couponId;
@@ -57,11 +60,11 @@ public class Coupon {
         this.discountType = discountType;
     }
 
-    public BigDecimal getDiscountValue() {
+    public double getDiscountValue() {
         return discountValue;
     }
 
-    public void setDiscountValue(BigDecimal discountValue) {
+    public void setDiscountValue(double discountValue) {
         this.discountValue = discountValue;
     }
 
@@ -104,5 +107,6 @@ public class Coupon {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+    public abstract double calculateDiscount(double amount);
 }
 
