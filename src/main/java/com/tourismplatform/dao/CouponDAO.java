@@ -4,6 +4,8 @@ import com.tourismplatform.model.Coupon;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import com.tourismplatform.model.PercentageCoupon;
+import com.tourismplatform.model.FixedCoupon;
 
 import java.util.List;
 
@@ -17,12 +19,24 @@ public class CouponDAO {
     }
 
     private final RowMapper<Coupon> couponRowMapper = (rs, rowNum) -> {
-        Coupon coupon = new Coupon();
+
+            String discountType = rs.getString("discount_type");
+
+            Coupon coupon;
+
+            if (discountType.equalsIgnoreCase("PERCENTAGE")) {
+
+                coupon = new PercentageCoupon();
+
+            } else {
+
+                coupon = new FixedCoupon();
+            }
 
         coupon.setCouponId(rs.getInt("coupon_id"));
         coupon.setCouponCode(rs.getString("coupon_code"));
         coupon.setDiscountType(rs.getString("discount_type"));
-        coupon.setDiscountValue(rs.getBigDecimal("discount_value"));
+        coupon.setDiscountValue(rs.getDouble("discount_value"));
         coupon.setIssueDate(rs.getDate("issue_date").toLocalDate());
         coupon.setExpiryDate(rs.getDate("expiry_date").toLocalDate());
         coupon.setStatus(rs.getString("status"));
