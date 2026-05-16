@@ -7,6 +7,9 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 @Controller
 public class UserController {
@@ -108,6 +111,7 @@ public class UserController {
 
     @PostMapping("/user/update")
     public String updateProfile(@ModelAttribute User user,
+                                @RequestParam("profileImageFile") MultipartFile file,
                                 HttpSession session,
                                 Model model) {
 
@@ -119,23 +123,34 @@ public class UserController {
 
         user.setUserId(loggedInUser.getUserId());
 
-        String validationMessage = userService.validateUser(user);
+        // IMAGE HANDLING
+        if (!file.isEmpty()) {
+            try {
+                String fileName = file.getOriginalFilename();
 
-        if (validationMessage != null) {
-            model.addAttribute("errorMessage", validationMessage);
-            model.addAttribute("user", user);
-            return "user/profile";
+                String uploadDir = "src/main/resources/static/images/";
+
+                File saveFile = new File(uploadDir + fileName);
+                file.transferTo(saveFile);
+
+                user.setProfileImage(fileName);
+
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", "Image upload failed");
+                return "user/profile";
+            }
+        } else {
+            user.setProfileImage(loggedInUser.getProfileImage());
         }
 
         boolean updated = userService.updateUser(user);
 
         if (!updated) {
             model.addAttribute("errorMessage", "Failed to update profile.");
-            model.addAttribute("user", user);
             return "user/profile";
         }
 
-        User updatedUser = userService.getUserById(loggedInUser.getUserId());
+        User updatedUser = userService.getUserById(user.getUserId());
         session.setAttribute("loggedInUser", updatedUser);
 
         return "redirect:/user/profile?message=Profile updated successfully.";

@@ -2,137 +2,190 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>User Profile - Tourism Platform</title>
+    <title>User Profile - Ceylon Dream Travels</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --ceylon-green: #102A23;
+            --ceylon-gold: #F4A261;
+            --ceylon-bg: #FDFBF7;
+        }
+
+        body {
+            background-color: var(--ceylon-bg);
+            font-family: Arial, sans-serif;
+        }
+
+        .profile-header {
+            background: linear-gradient(rgba(16,42,35,0.85), rgba(16,42,35,0.85)),
+            url('/images/profile-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+        }
+
+        .profile-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 3px solid #F4A261;
+            object-fit: cover;
+        }
+        .profile-card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .btn-gold {
+            background-color: var(--ceylon-gold);
+            border: none;
+            color: #3b2412;
+            font-weight: 700;
+            border-radius: 999px;
+        }
+
+        .btn-gold:hover {
+            background-color: #e78f4e;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #222;
+        }
+    </style>
 </head>
 
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-        <a class="navbar-brand" href="#">Tourism Platform</a>
+<div class="container mt-4">
 
-        <div class="d-flex">
-            <a class="btn btn-outline-light btn-sm" th:href="@{/logout}">
-                Logout
-            </a>
+    <!-- HEADER -->
+    <div class="profile-header mb-4 d-flex align-items-start gap-4">
+
+        <!-- PROFILE IMAGE (LEFT CORNER) -->
+        <img th:src="@{'/images/' + ${user.profileImage}}"
+             class="profile-avatar">
+
+        <!-- USER INFO -->
+        <div class="text-start">
+
+            <h3 class="fw-bold mb-2">
+                Welcome, <span th:text="${user.fullName}"></span> 👋
+            </h3>
+
+            <p class="mb-1">
+                <i class="bi bi-envelope me-2"></i>
+                <span th:text="${user.email}"></span>
+            </p>
+
+            <p class="mb-1">
+                <i class="bi bi-telephone me-2"></i>
+                <span th:text="${user.phoneNumber}"></span>
+            </p>
+
+            <p class="mb-0">
+                <i class="bi bi-geo-alt me-2"></i>
+                <span th:text="${user.address}"></span>
+            </p>
+
         </div>
+
     </div>
-</nav>
 
-<div class="container mt-4 mb-5">
+    <div class="row g-4">
 
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
+        <!-- INFO CARD -->
+        <div class="col-md-6">
+            <div class="card profile-card p-4">
+                <h5 class="mb-3">Profile Information</h5>
 
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">My Profile</h4>
-                </div>
+                <p class="info-label">Full Name</p>
+                <p class="info-value" th:text="${user.fullName}"></p>
 
-                <div class="card-body">
+                <p class="info-label">Email</p>
+                <p class="info-value" th:text="${user.email}"></p>
 
-                    <div class="text-center mb-3">
-                        <img th:if="${user.profileImage != null and !user.profileImage.isEmpty()}"
-                             th:src="${user.profileImage}"
-                             alt="Profile Image"
-                             width="120"
-                             height="120"
-                             style="object-fit: cover; border-radius: 50%; border: 2px solid #0d6efd;">
+                <p class="info-label">Phone Number</p>
+                <p class="info-value" th:text="${user.phoneNumber}"></p>
 
-                        <img th:if="${user.profileImage == null or user.profileImage.isEmpty()}"
-                             th:src="@{/images/default-user.png}"
-                             alt="Default Profile Image"
-                             width="120"
-                             height="120"
-                             style="object-fit: cover; border-radius: 50%; border: 2px solid #0d6efd;">
-                    </div>
-
-                    <div th:if="${param.message}" class="alert alert-success">
-                        <span th:text="${param.message}"></span>
-                    </div>
-
-                    <div th:if="${errorMessage}" class="alert alert-danger">
-                        <span th:text="${errorMessage}"></span>
-                    </div>
-
-                    <form th:action="@{/user/update}" th:object="${user}" method="post">
-
-                        <input type="hidden" th:field="*{userId}">
-                        <input type="hidden" th:field="*{status}">
-
-                        <div class="mb-3">
-                            <label for="fullName" class="form-label">Full Name</label>
-                            <input type="text"
-                                   class="form-control"
-                                   id="fullName"
-                                   th:field="*{fullName}"
-                                   required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email"
-                                   class="form-control"
-                                   id="email"
-                                   th:field="*{email}"
-                                   required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="text"
-                                   class="form-control"
-                                   id="password"
-                                   th:field="*{password}"
-                                   required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="phoneNumber" class="form-label">Phone Number</label>
-                            <input type="text"
-                                   class="form-control"
-                                   id="phoneNumber"
-                                   th:field="*{phoneNumber}"
-                                   required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control"
-                                      id="address"
-                                      th:field="*{address}"
-                                      rows="3"></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="profileImage" class="form-label">Profile Image Path</label>
-                            <input type="text"
-                                   class="form-control"
-                                   id="profileImage"
-                                   th:field="*{profileImage}"
-                                   placeholder="/images/default-user.png">
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a th:href="@{/user/profile}" class="btn btn-secondary">
-                                Reset
-                            </a>
-
-                            <button type="submit" class="btn btn-primary">
-                                Update Profile
-                            </button>
-                        </div>
-
-                    </form>
-
-                </div>
+                <p class="info-label">Address</p>
+                <p class="info-value" th:text="${user.address}"></p>
             </div>
+        </div>
 
+        <!-- EDIT CARD -->
+        <div class="col-md-6">
+            <div class="card profile-card p-4">
+                <h5 class="mb-3">Update Profile</h5>
+
+                <form th:action="@{/user/update}" method="post" th:object="${user}" enctype="multipart/form-data">
+
+                    <input type="hidden" th:field="*{userId}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" th:field="*{fullName}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" th:field="*{phoneNumber}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" rows="3" th:field="*{address}"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Profile Photo</label>
+                        <input type="file" name="profileImageFile" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-gold w-100">
+                        Update Profile
+                    </button>
+                </form>
+
+                <hr>
+                <h5 class="mb-3">Change Password</h5>
+
+                <form th:action="@{/user/change-password}" method="post">
+
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" name="oldPassword" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" name="newPassword" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" name="confirmPassword" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100">
+                        Change Password
+                    </button>
+
+                </form>
+            </div>
         </div>
     </div>
-
 </div>
 
 </body>

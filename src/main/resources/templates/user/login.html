@@ -89,6 +89,43 @@
             color: #0f2e22;
             text-decoration: underline;
         }
+
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 40px 0;
+        }
+
+        .auth-card {
+            background-color: #fff;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 22px 60px rgba(15, 23, 42, 0.18);
+        }
+
+        .image-panel {
+            min-height: 580px;
+            background:
+            linear-gradient(rgba(16,42,35,0.6), rgba(16,42,35,0.7)),
+            url('/images/login-travel.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            display: flex;
+            align-items: end;
+            padding: 40px;
+        }
+
+        .quote-box {
+            border-left: 4px solid #F4A261;
+            padding-left: 15px;
+        }
+
+        .form-panel {
+            padding: 50px;
+        }
+
     </style>
 </head>
 
@@ -97,6 +134,7 @@
 <div class="container auth-wrapper">
     <div class="row auth-card w-100 mx-auto" style="max-width: 1050px;">
 
+        <!-- LEFT IMAGE SIDE -->
         <div class="col-lg-6 d-none d-lg-flex image-panel">
             <div class="quote-box">
                 <h3 class="fw-bold">Welcome back.</h3>
@@ -104,52 +142,26 @@
             </div>
         </div>
 
+        <!-- RIGHT FORM SIDE -->
         <div class="col-lg-6 form-panel">
-
-            <div class="mb-4">
-                <a th:href="@{/}" class="small">
-                    <i class="bi bi-arrow-left"></i>
-                    Back to Home
-                </a>
-            </div>
 
             <h2 class="brand-title mb-2">Sign In</h2>
             <p class="text-muted mb-4">
-                Welcome back to your adventure with Ceylon Dream Travels.
+                Welcome back to Ceylon Dream Travels
             </p>
-
-            <div th:if="${message}" class="alert alert-info">
-                <span th:text="${message}"></span>
-            </div>
-
-            <div th:if="${errorMessage}" class="alert alert-danger">
-                <span th:text="${errorMessage}"></span>
-            </div>
 
             <form th:action="@{/login}" method="post">
 
                 <div class="mb-3">
-                    <label for="email" class="form-label fw-semibold">Email Address</label>
-                    <input type="email"
-                           class="form-control form-control-lg"
-                           id="email"
-                           name="email"
-                           placeholder="Enter your email"
-                           required>
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-control form-control-lg"
+                           name="email" required>
                 </div>
 
-                <div class="mb-2">
-                    <label for="password" class="form-label fw-semibold">Password</label>
-                    <input type="password"
-                           class="form-control form-control-lg"
-                           id="password"
-                           name="password"
-                           placeholder="Enter your password"
-                           required>
-                </div>
-
-                <div class="text-end mb-4">
-                    <a href="#" class="small">Forgot Password?</a>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-control form-control-lg"
+                           name="password" required>
                 </div>
 
                 <div class="d-grid">
@@ -160,7 +172,7 @@
 
             </form>
 
-            <p class="text-center mt-4 mb-0">
+            <p class="text-center mt-3">
                 Don't have an account?
                 <a th:href="@{/register}">Register here</a>
             </p>
