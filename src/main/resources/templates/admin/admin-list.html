@@ -2,139 +2,120 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Admin List - Tourism Platform</title>
+    <title>Admin Management</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --ceylon-green: #102A23;
+            --ceylon-gold: #F4A261;
+            --ceylon-bg: #FDFBF7;
+        }
+
+        body {
+            background-color: var(--ceylon-bg);
+        }
+
+        .header {
+            background: var(--ceylon-green);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .btn-gold {
+            background: var(--ceylon-gold);
+            border: none;
+            font-weight: 600;
+            border-radius: 999px;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .badge-role {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
+        .super { background: #d4af37; color: black; }
+        .admin { background: #102A23; color: white; }
+        .default { background: #0d6efd; color: white; }
+    </style>
 </head>
 
-<body class="bg-light">
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-        <a class="navbar-brand" th:href="@{/admin/dashboard}">Tourism Admin Panel</a>
-
-        <div class="d-flex gap-2">
-            <a class="btn btn-outline-light btn-sm" th:href="@{/admin/dashboard}">Dashboard</a>
-            <a class="btn btn-outline-light btn-sm" th:href="@{/admin/logout}">Logout</a>
-        </div>
-    </div>
-</nav>
+<body>
 
 <div class="container mt-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Admin List</h3>
-
-        <a th:href="@{/admin/new}" class="btn btn-primary">
-            Add New Admin
-        </a>
+    <div class="header mb-3 text-center">
+        <h3>Admin Management</h3>
     </div>
 
-    <div th:if="${message}" class="alert alert-info">
-        <span th:text="${message}"></span>
+    <div class="table-card">
+
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="admin : ${admins}">
+                <td th:text="${admin.adminId}"></td>
+                <td th:text="${admin.fullName}"></td>
+                <td th:text="${admin.email}"></td>
+
+                <td>
+                    <span th:if="${admin.default}" class="badge-role default">DEFAULT ADMIN</span>
+                    <span th:if="${admin.role == 'SUPER_ADMIN' && !admin.default}" class="badge-role super">SUPER ADMIN</span>
+                    <span th:if="${admin.role == 'ADMIN'}" class="badge-role admin">ADMIN</span>
+                </td>
+
+                <td th:text="${admin.status}"></td>
+
+                <td>
+
+                    <!-- EDIT -->
+                    <a th:if="${loggedInAdmin.role == 'SUPER_ADMIN' || loggedInAdmin.default}"
+                       th:href="@{'/admin/edit/' + ${admin.adminId}}"
+                       class="btn btn-sm btn-warning">
+                        Edit
+                    </a>
+
+                    <!-- ACTIVATE -->
+                    <a th:if="${admin.status == 'INACTIVE'}"
+                       th:href="@{'/admin/activate/' + ${admin.adminId}}"
+                       class="btn btn-sm btn-success">
+                        Activate
+                    </a>
+
+                    <!-- DEACTIVATE -->
+                    <a th:if="${admin.status == 'ACTIVE'}"
+                       th:href="@{'/admin/delete/' + ${admin.adminId}}"
+                       class="btn btn-sm btn-danger">
+                        Deactivate
+                    </a>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
     </div>
-
-    <div class="card shadow-sm">
-        <div class="card-body">
-
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped align-middle">
-                    <thead class="table-primary">
-                    <tr>
-                        <th>ID</th>
-                        <th>Full Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Default Admin</th>
-                        <th>Created At</th>
-                        <th style="width: 180px;">Actions</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <tr th:each="admin : ${admins}">
-                        <td th:text="${admin.adminId}">1</td>
-                        <td th:text="${admin.fullName}">Default Admin</td>
-                        <td th:text="${admin.email}">admin@gmail.com</td>
-                        <td>
-                            <span th:if="${admin.role == 'SUPER_ADMIN'}"
-                                style="background-color: #ede9fe;
-                                    color: #5b21b6;
-                                    border: 1px solid #c4b5fd;
-                                    padding: 3px 9px;
-                                    border-radius: 6px;
-                                    font-size: 12px;
-                                    font-weight: 600;
-                                    display: inline-block;">
-                                SUPER ADMIN
-                            </span>
-
-                            <span th:if="${admin.role == 'ADMIN'}"
-                                  style="background-color: #dbeafe;
-                                         color: #1d4ed8;
-                                         border: 1px solid #93c5fd;
-                                         padding: 3px 9px;
-                                         border-radius: 6px;
-                                         font-size: 12px;
-                                         font-weight: 600;
-                                         display: inline-block;">
-                                  ADMIN
-                            </span>
-                        </td>
-
-                        <td>
-                            <span th:if="${admin.status == 'ACTIVE'}" class="badge bg-success">ACTIVE</span>
-                            <span th:if="${admin.status == 'INACTIVE'}" class="badge bg-secondary">INACTIVE</span>
-                        </td>
-                        <td>
-                            <span th:if="${admin.default}" class="badge bg-warning text-dark">YES</span>
-                            <span th:if="${!admin.default}" class="badge bg-light text-dark">NO</span>
-                        </td>
-                        <td th:text="${admin.createdAt}">2026-01-01</td>
-                        <td>
-                            <a th:if="${(admin.default and admin.adminId == loggedInAdminId) or (!admin.default and (loggedInAdmin.default or loggedInAdmin.role == 'SUPER_ADMIN'))}"
-                               th:href="@{/admin/edit/{adminId}(adminId=${admin.adminId})}"
-                               class="btn btn-sm btn-warning">
-                                Edit
-                            </a>
-
-                            <a th:if="${!admin.default and admin.adminId != loggedInAdminId and admin.status == 'ACTIVE' and (loggedInAdmin.default or loggedInAdmin.role == 'SUPER_ADMIN')}"
-                               th:href="@{/admin/delete/{adminId}(adminId=${admin.adminId})}"
-                               class="btn btn-sm btn-danger"
-                               onclick="return confirm('Are you sure you want to deactivate this admin?');">
-                                Deactivate
-                            </a>
-
-                            <a th:if="${!admin.default and admin.status == 'INACTIVE' and (loggedInAdmin.default or loggedInAdmin.role == 'SUPER_ADMIN')}"
-                               th:href="@{/admin/activate/{adminId}(adminId=${admin.adminId})}"
-                               class="btn btn-sm btn-success"
-                               onclick="return confirm('Are you sure you want to activate this admin?');">
-                                Activate
-                            </a>
-
-                            <span th:if="${admin.default}" class="text-muted small d-block mt-1">
-                                Protected
-                            </span>
-
-                            <span th:if="${admin.adminId == loggedInAdminId}" class="text-muted small d-block mt-1">
-                                Current login
-                            </span>
-                        </td>
-                    </tr>
-
-                    <tr th:if="${admins == null or admins.isEmpty()}">
-                        <td colspan="8" class="text-center text-muted">
-                            No admins found.
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-    </div>
-
 </div>
 
 </body>
