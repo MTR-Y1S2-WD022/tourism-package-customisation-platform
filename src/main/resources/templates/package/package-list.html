@@ -48,17 +48,21 @@
                     <td th:text="${pkg.packageName}">Sample Package</td>
                     <td th:text="${pkg.locationArea}">Galle</td>
                     <td th:text="${pkg.basePrice}">45000.00</td>
-
                     <td>
-            <span th:if="${pkg.status == 'ACTIVE'}"
-                  class="badge bg-success">
-                ACTIVE
-            </span>
+                     <span class="badge bg-info"
+                       th:text="${service.getDestinationStatus(pkg.packageId)}">
+                     </span>
+                    </td>
+                    <td>
+                      <span th:if="${pkg.status == 'ACTIVE'}"
+                      class="badge bg-success">
+                       ACTIVE
+                      </span>
 
                         <span th:if="${pkg.status == 'INACTIVE'}"
                               class="badge bg-secondary">
-                INACTIVE
-            </span>
+                       INACTIVE
+                        </span>
                     </td>
 
                     <td>
