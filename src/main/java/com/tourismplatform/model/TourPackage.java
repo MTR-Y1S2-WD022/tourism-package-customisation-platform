@@ -94,4 +94,9 @@ public class TourPackage {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+    public String getDestinationStatus() {
+        return "";
+    }
+
 }
