@@ -23,6 +23,7 @@ public class TourPackageController {
     @GetMapping("/packages")
     public String listPackages(Model model) {
         model.addAttribute("packages", tourPackageService.getAllActivePackages());
+        model.addAttribute("service", tourPackageService);
         return "package/package-list";
     }
 
