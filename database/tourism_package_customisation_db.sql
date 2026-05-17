@@ -24,7 +24,7 @@ CREATE TABLE destinations (
                               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE package_destinations (
+CREATE TABLE  IF NOT EXISTS package_destinations (
                                       id INT PRIMARY KEY AUTO_INCREMENT,
                                       package_id INT NOT NULL,
                                       destination_id INT NOT NULL,
