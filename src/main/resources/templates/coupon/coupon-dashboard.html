@@ -14,7 +14,7 @@
     }
 
     .dashboard-header {
-        background: linear-gradient(135deg, #0d6efd, #20c997);
+        background: linear-gradient(135deg, #20c997, #20c997);
         color: white;
         border-radius: 22px;
         padding: 35px;
@@ -54,6 +54,9 @@
         font-weight: 600;
     }
 
+
+
+
     .section-title {
         font-weight: 700;
         color: #263238;
@@ -84,9 +87,7 @@
           <i class="bi bi-plus-circle"></i> Add Coupon
         </a>
 
-        <a th:href="@{/admin/coupons/list}" class="btn btn-outline-light btn-custom">
-          <i class="bi bi-list-ul"></i> View List
-        </a>
+
       </div>
     </div>
   </div>
@@ -153,12 +154,12 @@
 
   <div class="row g-4">
 
-    <div class="col-md-7">
-      <div class="card quick-card">
+    <div class="col-md-7 mx-auto">
+      <div class="card quick-card text-center">
         <div class="card-body p-4">
           <h4 class="section-title mb-3">Quick Actions</h4>
 
-          <div class="row g-3">
+          <div class="row g-3 justify-content-center">
             <div class="col-md-6">
               <a th:href="@{/admin/coupons/new}" class="btn btn-primary w-100 btn-custom">
                 <i class="bi bi-plus-lg"></i> Create New Coupon
@@ -172,15 +173,11 @@
             </div>
 
             <div class="col-md-6">
-              <a th:href="@{/admin/coupons/list}" class="btn btn-warning w-100 btn-custom">
-                <i class="bi bi-calendar-plus"></i> Extend Expiry Date
-              </a>
+
             </div>
 
             <div class="col-md-6">
-              <a th:href="@{/admin/coupons/list}" class="btn btn-danger w-100 btn-custom">
-                <i class="bi bi-ban"></i> Cancel Coupon
-              </a>
+
             </div>
 
 
