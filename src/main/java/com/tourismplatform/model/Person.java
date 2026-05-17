@@ -4,11 +4,11 @@ import java.time.LocalDateTime;
 
 public class Person {
 
-    private String fullName;
-    private String email;
-    private String password;
-    private String status;
-    private LocalDateTime createdAt;
+    protected String fullName;
+    protected String email;
+    protected String password;
+    protected String status;
+    protected LocalDateTime createdAt;
 
     public Person() {
     }

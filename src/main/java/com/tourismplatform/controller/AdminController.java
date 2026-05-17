@@ -16,7 +16,9 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
+
     private final AdminService adminService;
+
     private final UserService userService;
 
     public AdminController(AdminService adminService, UserService userService) {

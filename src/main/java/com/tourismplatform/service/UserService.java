@@ -2,6 +2,7 @@ package com.tourismplatform.service;
 
 import com.tourismplatform.dao.UserDAO;
 import com.tourismplatform.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
