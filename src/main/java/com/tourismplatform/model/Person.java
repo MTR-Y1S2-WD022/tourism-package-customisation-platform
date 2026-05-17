@@ -2,6 +2,7 @@ package com.tourismplatform.model;
 
 import java.time.LocalDateTime;
 
+//dto
 public class Person {
 
     protected String fullName;
