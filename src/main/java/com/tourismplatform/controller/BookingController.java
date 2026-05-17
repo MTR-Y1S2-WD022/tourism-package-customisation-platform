@@ -1,6 +1,6 @@
 package com.tourismplatform.controller;
 
-import com.tourismplatform.model.Booking;
+import com.tourismplatform.model.BookingEntity;
 import com.tourismplatform.service.BookingService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -60,7 +60,7 @@ public class BookingController {
 
         BigDecimal totalAmount = bookingService.calculateFinalTotal(subtotalAmount, discountAmount);
 
-        Booking booking = new Booking();
+        BookingEntity booking = new BookingEntity();
         booking.setUserId(userId);
         booking.setPackageId(packageId);
         booking.setCouponId(couponId);
@@ -82,7 +82,7 @@ public class BookingController {
     }
 
     @PostMapping("/booking/save")
-    public String saveBooking(@ModelAttribute Booking booking,
+    public String saveBooking(@ModelAttribute BookingEntity booking,
                               @RequestParam(required = false) List<Integer> selectedDestinationIds) {
 
         booking.setBookingStatus("PENDING");
@@ -103,7 +103,7 @@ public class BookingController {
 
     @GetMapping("/booking/details/{bookingId}")
     public String showBookingDetails(@PathVariable int bookingId, Model model) {
-        Booking booking = bookingService.getBookingById(bookingId);
+        BookingEntity booking = bookingService.getBookingById(bookingId);
         List<Integer> destinationIds = bookingService.getDestinationIdsByBookingId(bookingId);
 
         model.addAttribute("booking", booking);
@@ -114,7 +114,7 @@ public class BookingController {
 
     @GetMapping("/admin/bookings")
     public String showAdminBookingList(Model model) {
-        List<Booking> bookings = bookingService.getAllBookings();
+        List<BookingEntity> bookings = bookingService.getAllBookings();
         model.addAttribute("bookings", bookings);
 
         return "admin/booking-list";

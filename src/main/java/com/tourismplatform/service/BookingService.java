@@ -1,7 +1,10 @@
 package com.tourismplatform.service;
 
 import com.tourismplatform.dao.BookingDAO;
+import com.tourismplatform.model.BookingEntity;
 import com.tourismplatform.model.Booking;
+import com.tourismplatform.model.NormalBooking;
+import com.tourismplatform.model.CouponBooking;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,6 +19,10 @@ public class BookingService {
     public BookingService(BookingDAO bookingDAO) {
         this.bookingDAO = bookingDAO;
     }
+
+    // =========================
+    // COST CALCULATIONS
+    // =========================
 
     public BigDecimal getHotelCost(String hotelType) {
         return switch (hotelType) {
@@ -44,6 +51,10 @@ public class BookingService {
         };
     }
 
+    // =========================
+    // SUBTOTAL CALCULATION
+    // =========================
+
     public BigDecimal calculateSubtotal(BigDecimal packageBasePrice,
                                         List<BigDecimal> selectedDestinationCosts,
                                         String hotelType,
@@ -67,6 +78,10 @@ public class BookingService {
                 .add(getGuideCost(guideOption));
     }
 
+    // =========================
+    // DISCOUNT CALCULATION
+    // =========================
+
     public BigDecimal calculateDiscount(BigDecimal subtotalAmount,
                                         String discountType,
                                         BigDecimal discountValue) {
@@ -76,7 +91,8 @@ public class BookingService {
         }
 
         if ("PERCENTAGE".equals(discountType)) {
-            return subtotalAmount.multiply(discountValue).divide(BigDecimal.valueOf(100));
+            return subtotalAmount.multiply(discountValue)
+                    .divide(BigDecimal.valueOf(100));
         }
 
         if ("FIXED".equals(discountType)) {
@@ -89,6 +105,10 @@ public class BookingService {
         return BigDecimal.ZERO;
     }
 
+    // =========================
+    // FINAL TOTAL (OLD LOGIC)
+    // =========================
+
     public BigDecimal calculateFinalTotal(BigDecimal subtotalAmount, BigDecimal discountAmount) {
         BigDecimal finalTotal = subtotalAmount.subtract(discountAmount);
 
@@ -99,13 +119,43 @@ public class BookingService {
         return finalTotal;
     }
 
+    // =========================
+    // OOP POLYMORPHISM METHOD (NEW)
+    // =========================
+
+    public BigDecimal calculateFinalAmountWithOOP(BigDecimal subtotal, BigDecimal discount) {
+
+        Booking booking;
+
+        if (discount != null && discount.compareTo(BigDecimal.ZERO) > 0) {
+            booking = new CouponBooking();
+        } else {
+            booking = new NormalBooking();
+        }
+
+        booking.setSubtotalAmount(subtotal.doubleValue());
+        booking.setDiscountAmount(discount.doubleValue());
+
+        double result = booking.calculateTotal();
+
+        return BigDecimal.valueOf(result);
+    }
+
+    // =========================
+    // VALIDATION
+    // =========================
+
     public boolean isValidDateRange(LocalDate startDate, LocalDate endDate) {
         return startDate != null
                 && endDate != null
                 && !endDate.isBefore(startDate);
     }
 
-    public int saveBooking(Booking booking) {
+    // =========================
+    // DATABASE OPERATIONS
+    // =========================
+
+    public int saveBooking(BookingEntity booking) {
         return bookingDAO.saveBooking(booking);
     }
 
@@ -113,11 +163,11 @@ public class BookingService {
         bookingDAO.saveBookingDestination(bookingId, destinationId);
     }
 
-    public List<Booking> getAllBookings() {
+    public List<BookingEntity> getAllBookings() {
         return bookingDAO.findAllBookings();
     }
 
-    public Booking getBookingById(int bookingId) {
+    public BookingEntity getBookingById(int bookingId) {
         return bookingDAO.findBookingById(bookingId);
     }
 
@@ -133,11 +183,9 @@ public class BookingService {
         bookingDAO.cancelBooking(bookingId);
     }
 
-
-
-    // googl map......
-
-
+    // =========================
+    // GOOGLE MAPS
+    // =========================
 
     public String generateGoogleMapsUrl(List<String> destinationNames) {
         String baseUrl = "https://www.google.com/maps/search/?api=1&query=";
