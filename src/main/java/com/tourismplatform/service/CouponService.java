@@ -77,52 +77,36 @@ public class CouponService {
             return false;
         }
 
-        if (coupon.getDiscountValue() == null || coupon.getDiscountValue().compareTo(BigDecimal.ZERO) <= 0) {
+        if (coupon.getDiscountValue() <= 0){
             return false;
         }
-
         return true;
     }
 
-    public BigDecimal calculateDiscountAmount(Coupon coupon, BigDecimal subtotalAmount) {
-        if (!isCouponValid(coupon) || subtotalAmount == null || subtotalAmount.compareTo(BigDecimal.ZERO) <= 0) {
-            return BigDecimal.ZERO;
+    public double calculateDiscountAmount(Coupon coupon, double subtotalAmount) {
+
+        if (!isCouponValid(coupon) || subtotalAmount <= 0) {
+            return 0;
         }
 
-        BigDecimal discountAmount;
+        double discountAmount = coupon.calculateDiscount(subtotalAmount);
 
-        if ("PERCENTAGE".equalsIgnoreCase(coupon.getDiscountType())) {
-            discountAmount = subtotalAmount
-                    .multiply(coupon.getDiscountValue())
-                    .divide(BigDecimal.valueOf(100));
-        } else if ("FIXED".equalsIgnoreCase(coupon.getDiscountType())) {
-            discountAmount = coupon.getDiscountValue();
-        } else {
-            discountAmount = BigDecimal.ZERO;
-        }
-
-        if (discountAmount.compareTo(subtotalAmount) > 0) {
+        if (discountAmount > subtotalAmount) {
             return subtotalAmount;
         }
 
         return discountAmount;
     }
 
-    public BigDecimal calculateFinalTotal(BigDecimal subtotalAmount, BigDecimal discountAmount) {
-        if (subtotalAmount == null) {
-            return BigDecimal.ZERO;
-        }
+    public double calculateFinalTotal(double subtotalAmount, double discountAmount) {
 
-        if (discountAmount == null) {
-            discountAmount = BigDecimal.ZERO;
-        }
+        double finalTotal = subtotalAmount - discountAmount;
 
-        BigDecimal finalTotal = subtotalAmount.subtract(discountAmount);
-
-        if (finalTotal.compareTo(BigDecimal.ZERO) < 0) {
-            return BigDecimal.ZERO;
+        if (finalTotal < 0) {
+            return 0;
         }
 
         return finalTotal;
+
     }
 }
