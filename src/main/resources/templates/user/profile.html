@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile - Ceylon Dream Travels</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --ceylon-green: #102A23;
+            --ceylon-gold: #F4A261;
+            --ceylon-bg: #FDFBF7;
+        }
+
+        body {
+            background-color: var(--ceylon-bg);
+            font-family: Arial, sans-serif;
+        }
+
+        .profile-header {
+            background: linear-gradient(rgba(16,42,35,0.85), rgba(16,42,35,0.85)),
+            url('/images/profile-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+        }
+
+        .profile-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            border: 3px solid #F4A261;
+            object-fit: cover;
+        }
+        .profile-card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .btn-gold {
+            background-color: var(--ceylon-gold);
+            border: none;
+            color: #3b2412;
+            font-weight: 700;
+            border-radius: 999px;
+        }
+
+        .btn-gold:hover {
+            background-color: #e78f4e;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #222;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="profile-header mb-4 d-flex align-items-start gap-4">
+
+        <!-- PROFILE IMAGE (LEFT CORNER) -->
+        <img th:src="@{'/images/' + ${user.profileImage}}"
+             class="profile-avatar">
+
+        <!-- USER INFO -->
+        <div class="text-start">
+
+            <h3 class="fw-bold mb-2">
+                Welcome, <span th:text="${user.fullName}"></span> 👋
+            </h3>
+
+            <p class="mb-1">
+                <i class="bi bi-envelope me-2"></i>
+                <span th:text="${user.email}"></span>
+            </p>
+
+            <p class="mb-1">
+                <i class="bi bi-telephone me-2"></i>
+                <span th:text="${user.phoneNumber}"></span>
+            </p>
+
+            <p class="mb-0">
+                <i class="bi bi-geo-alt me-2"></i>
+                <span th:text="${user.address}"></span>
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+
+        <!-- INFO CARD -->
+        <div class="col-md-6">
+            <div class="card profile-card p-4">
+                <h5 class="mb-3">Profile Information</h5>
+
+                <p class="info-label">Full Name</p>
+                <p class="info-value" th:text="${user.fullName}"></p>
+
+                <p class="info-label">Email</p>
+                <p class="info-value" th:text="${user.email}"></p>
+
+                <p class="info-label">Phone Number</p>
+                <p class="info-value" th:text="${user.phoneNumber}"></p>
+
+                <p class="info-label">Address</p>
+                <p class="info-value" th:text="${user.address}"></p>
+            </div>
+        </div>
+
+        <!-- EDIT CARD -->
+        <div class="col-md-6">
+            <div class="card profile-card p-4">
+                <h5 class="mb-3">Update Profile</h5>
+
+                <form th:action="@{/user/update}" method="post" th:object="${user}" enctype="multipart/form-data">
+
+                    <input type="hidden" th:field="*{userId}">
+
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" th:field="*{fullName}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" th:field="*{phoneNumber}">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <textarea class="form-control" rows="3" th:field="*{address}"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Profile Photo</label>
+                        <input type="file" name="profileImageFile" class="form-control">
+                    </div>
+
+                    <button type="submit" class="btn btn-gold w-100">
+                        Update Profile
+                    </button>
+                </form>
+
+                <hr>
+                <h5 class="mb-3">Change Password</h5>
+
+                <form th:action="@{/user/change-password}" method="post">
+
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" name="oldPassword" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" name="newPassword" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" name="confirmPassword" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-warning w-100">
+                        Change Password
+                    </button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

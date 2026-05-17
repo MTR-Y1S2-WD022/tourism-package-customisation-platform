@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Management</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --ceylon-green: #102A23;
+            --ceylon-gold: #F4A261;
+            --ceylon-bg: #FDFBF7;
+        }
+
+        body {
+            background-color: var(--ceylon-bg);
+        }
+
+        .header {
+            background: var(--ceylon-green);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .btn-gold {
+            background: var(--ceylon-gold);
+            border: none;
+            font-weight: 600;
+            border-radius: 999px;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .badge-role {
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
+        .super { background: #d4af37; color: black; }
+        .admin { background: #102A23; color: white; }
+        .default { background: #0d6efd; color: white; }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-4">
+
+    <div class="header mb-3 text-center">
+        <h3>Admin Management</h3>
+    </div>
+
+    <div class="table-card">
+
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="admin : ${admins}">
+                <td th:text="${admin.adminId}"></td>
+                <td th:text="${admin.fullName}"></td>
+                <td th:text="${admin.email}"></td>
+
+                <td>
+                    <span th:if="${admin.default}" class="badge-role default">DEFAULT ADMIN</span>
+                    <span th:if="${admin.role == 'SUPER_ADMIN' && !admin.default}" class="badge-role super">SUPER ADMIN</span>
+                    <span th:if="${admin.role == 'ADMIN'}" class="badge-role admin">ADMIN</span>
+                </td>
+
+                <td th:text="${admin.status}"></td>
+
+                <td>
+
+                    <!-- EDIT -->
+                    <a th:if="${loggedInAdmin.role == 'SUPER_ADMIN' || loggedInAdmin.default}"
+                       th:href="@{'/admin/edit/' + ${admin.adminId}}"
+                       class="btn btn-sm btn-warning">
+                        Edit
+                    </a>
+
+                    <!-- ACTIVATE -->
+                    <a th:if="${admin.status == 'INACTIVE'}"
+                       th:href="@{'/admin/activate/' + ${admin.adminId}}"
+                       class="btn btn-sm btn-success">
+                        Activate
+                    </a>
+
+                    <!-- DEACTIVATE -->
+                    <a th:if="${admin.status == 'ACTIVE'}"
+                       th:href="@{'/admin/delete/' + ${admin.adminId}}"
+                       class="btn btn-sm btn-danger">
+                        Deactivate
+                    </a>
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+</body>
+</html>
