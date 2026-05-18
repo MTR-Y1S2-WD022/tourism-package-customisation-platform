@@ -74,27 +74,15 @@
                 <td th:text="${user.email}"></td>
 
                 <td>
-                    <span th:if="${user.status == 'ACTIVE'}" class="badge-active">ACTIVE</span>
-                    <span th:if="${user.status == 'INACTIVE'}" class="badge-inactive">INACTIVE</span>
-                </td>
-
-                <td>
 
                     <a th:href="@{'/admin/users/edit/' + ${user.userId}}"
                        class="btn btn-warning btn-sm">
                         Edit
                     </a>
 
-                    <a th:if="${user.status == 'ACTIVE'}"
-                       th:href="@{'/admin/users/deactivate/' + ${user.userId}}"
+                    <a th:href="@{'/admin/users/delete/' + ${user.userId}}"
                        class="btn btn-danger btn-sm">
-                        Deactivate
-                    </a>
-
-                    <a th:if="${user.status == 'INACTIVE'}"
-                       th:href="@{'/admin/users/activate/' + ${user.userId}}"
-                       class="btn btn-success btn-sm">
-                        Activate
+                        Delete
                     </a>
 
                 </td>

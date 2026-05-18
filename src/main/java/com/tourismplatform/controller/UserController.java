@@ -23,8 +23,6 @@ public class UserController {
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         User user = new User();
-        user.setStatus("ACTIVE");
-
         model.addAttribute("user", user);
 
         return "user/register";

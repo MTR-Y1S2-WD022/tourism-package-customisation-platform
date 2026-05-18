@@ -68,7 +68,6 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th>Status</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -85,8 +84,6 @@
                     <span th:if="${admin.role == 'ADMIN'}" class="badge-role admin">ADMIN</span>
                 </td>
 
-                <td th:text="${admin.status}"></td>
-
                 <td>
 
                     <!-- EDIT -->
@@ -96,19 +93,11 @@
                         Edit
                     </a>
 
-                    <!-- ACTIVATE -->
-                    <a th:if="${admin.status == 'INACTIVE'}"
-                       th:href="@{'/admin/activate/' + ${admin.adminId}}"
-                       class="btn btn-sm btn-success">
-                        Activate
+                    <a th:href="@{'/admin/delete/' + ${admin.adminId}}"
+                       class="btn btn-danger btn-sm">
+                        Delete
                     </a>
 
-                    <!-- DEACTIVATE -->
-                    <a th:if="${admin.status == 'ACTIVE'}"
-                       th:href="@{'/admin/delete/' + ${admin.adminId}}"
-                       class="btn btn-sm btn-danger">
-                        Deactivate
-                    </a>
 
                 </td>
             </tr>

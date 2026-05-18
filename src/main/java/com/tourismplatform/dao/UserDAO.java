@@ -26,7 +26,6 @@ public class UserDAO {
         user.setPhoneNumber(rs.getString("phone_number"));
         user.setAddress(rs.getString("address"));
         user.setProfileImage(rs.getString("profile_image"));
-        user.setStatus(rs.getString("status"));
 
         if (rs.getTimestamp("created_at") != null) {
             user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
@@ -40,7 +39,6 @@ public class UserDAO {
                 SELECT * FROM users
                 WHERE email = ?
                 AND password = ?
-                AND status = 'ACTIVE'
                 """;
 
         List<User> users = jdbcTemplate.query(sql, userRowMapper, email, password);
@@ -78,8 +76,8 @@ public class UserDAO {
 
     public int save(User user) {
         String sql = """
-                INSERT INTO users (full_name, email, password, phone_number, address, profile_image, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO users (full_name, email, password, phone_number, address, profile_image)
+                VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
         return jdbcTemplate.update(
@@ -89,23 +87,16 @@ public class UserDAO {
                 user.getPassword(),
                 user.getPhoneNumber(),
                 user.getAddress(),
-                user.getProfileImage(),
-                user.getStatus()
+                user.getProfileImage()
         );
     }
 
     public int update(User user) {
         String sql = """
-                UPDATE users
-                SET full_name = ?,
-                    email = ?,
-                    password = ?,
-                    phone_number = ?,
-                    address = ?,
-                    profile_image = ?,
-                    status = ?
-                WHERE user_id = ?
-                """;
+        UPDATE users
+        SET full_name=?, email=?, password=?, phone_number=?, address=?, profile_image=?
+        WHERE user_id=?
+        """;
 
         return jdbcTemplate.update(
                 sql,
@@ -115,18 +106,12 @@ public class UserDAO {
                 user.getPhoneNumber(),
                 user.getAddress(),
                 user.getProfileImage(),
-                user.getStatus(),
                 user.getUserId()
         );
     }
 
-    public int deactivate(int userId) {
-        String sql = "UPDATE users SET status = 'INACTIVE' WHERE user_id = ?";
-        return jdbcTemplate.update(sql, userId);
-    }
-
-    public int activate(int userId) {
-        String sql = "UPDATE users SET status = 'ACTIVE' WHERE user_id = ?";
+    public int deleteUser(int userId) {
+        String sql = "DELETE FROM users WHERE user_id = ?";
         return jdbcTemplate.update(sql, userId);
     }
 

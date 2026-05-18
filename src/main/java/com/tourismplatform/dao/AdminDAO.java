@@ -24,7 +24,6 @@ public class AdminDAO {
         admin.setEmail(rs.getString("email"));
         admin.setPassword(rs.getString("password"));
         admin.setRole(rs.getString("role"));
-        admin.setStatus(rs.getString("status"));
         admin.setDefault(rs.getBoolean("is_default"));
 
         if (rs.getTimestamp("created_at") != null) {
@@ -39,7 +38,6 @@ public class AdminDAO {
                 SELECT * FROM admins
                 WHERE email = ?
                 AND password = ?
-                AND status = 'ACTIVE'
                 """;
 
         List<Admin> admins = jdbcTemplate.query(sql, adminRowMapper, email, password);
@@ -77,8 +75,8 @@ public class AdminDAO {
 
     public int save(Admin admin) {
         String sql = """
-                INSERT INTO admins (full_name, email, password, role, status, is_default)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO admins (full_name, email, password, role, is_default)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
         return jdbcTemplate.update(
@@ -87,7 +85,6 @@ public class AdminDAO {
                 admin.getEmail(),
                 admin.getPassword(),
                 admin.getRole(),
-                admin.getStatus(),
                 admin.isDefault()
         );
     }
@@ -98,8 +95,7 @@ public class AdminDAO {
                 SET full_name = ?,
                     email = ?,
                     password = ?,
-                    role = ?,
-                    status = ?
+                    role = ?
                 WHERE admin_id = ?
                 """;
 
@@ -109,18 +105,15 @@ public class AdminDAO {
                 admin.getEmail(),
                 admin.getPassword(),
                 admin.getRole(),
-                admin.getStatus(),
                 admin.getAdminId()
         );
     }
 
-    public int deactivate(int adminId) {
-        String sql = "UPDATE admins SET status = 'INACTIVE' WHERE admin_id = ?";
-        return jdbcTemplate.update(sql, adminId);
+    public int deleteAdmin(int adminId) {
+        String sql = "DELETE FROM admins WHERE admin_id = ?";
+        jdbcTemplate.update(sql, adminId);
+        return adminId;
     }
 
-    public int activate(int adminId) {
-        String sql = "UPDATE admins SET status = 'ACTIVE' WHERE admin_id = ?";
-        return jdbcTemplate.update(sql, adminId);
-    }
+
 }

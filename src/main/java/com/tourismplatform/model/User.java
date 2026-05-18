@@ -60,4 +60,17 @@ public class User extends Person {
         return "/user/dashboard";
     }
 
+    @Override
+    public String validate() {
+        String base = super.validate();
+        if (base != null) return base;
+
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+            return "Phone number is required.";
+        }
+
+        return null;
+    }
+
+
 }

@@ -124,8 +124,6 @@
 
             <form th:action="@{/register}" th:object="${user}" method="post">
 
-                <input type="hidden" th:field="*{status}">
-
                 <div class="mb-3">
                     <label for="fullName" class="form-label fw-semibold">Full Name</label>
                     <input type="text"

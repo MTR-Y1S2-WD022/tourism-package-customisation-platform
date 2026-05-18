@@ -48,4 +48,21 @@ public class Admin extends Person {
         return "/admin/dashboard";
     }
 
+    @Override
+    public String validate() {
+        String base = super.validate();
+        if (base != null) return base;
+
+        if (role == null || role.trim().isEmpty()) {
+            return "Role is required.";
+        }
+
+        if (!role.equals("ADMIN") && !role.equals("SUPER_ADMIN")) {
+            return "Role must be ADMIN or SUPER_ADMIN.";
+        }
+
+        return null;
+    }
+
+
 }

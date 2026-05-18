@@ -8,7 +8,6 @@ public class Person {
     protected String fullName;
     protected String email;
     protected String password;
-    protected String status;
     protected LocalDateTime createdAt;
 
     public Person() {
@@ -18,7 +17,6 @@ public class Person {
         this.fullName = fullName;
         this.email = email;
         this.password = password;
-        this.status = status;
         this.createdAt = createdAt;
     }
 
@@ -46,14 +44,6 @@ public class Person {
         this.password = password;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -65,5 +55,30 @@ public class Person {
     public String getDashboardPath() {
         return "/home";
     }
+
+    public String validate() {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return "Full name is required.";
+        }
+
+        if (email == null || email.trim().isEmpty()) {
+            return "Email is required.";
+        }
+
+        if (!email.contains("@")) {
+            return "Please enter a valid email address.";
+        }
+
+        if (password == null || password.trim().isEmpty()) {
+            return "Password is required.";
+        }
+
+        if (password.length() < 8) {
+            return "Password must have at least 8 characters.";
+        }
+
+        return null;
+    }
+
 
 }

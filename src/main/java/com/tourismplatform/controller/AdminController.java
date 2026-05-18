@@ -172,7 +172,6 @@ public class AdminController {
 
         Admin admin = new Admin();
         admin.setRole("ADMIN");
-        admin.setStatus("ACTIVE");
 
         model.addAttribute("admin", admin);
         model.addAttribute("formTitle", "Add New Admin");
@@ -203,12 +202,9 @@ public class AdminController {
             return "redirect:/admin/list?message=You do not have permission to update this admin.";
         }
 
-        admin.setStatus(existingAdmin.getStatus());
 
-        // Default Admin must always stay SUPER_ADMIN, ACTIVE, and protected.
         if (existingAdmin.isDefault()) {
             admin.setRole("SUPER_ADMIN");
-            admin.setStatus("ACTIVE");
             admin.setDefault(true);
         }
 
@@ -243,8 +239,8 @@ public class AdminController {
     }
 
     @GetMapping("/delete/{adminId}")
-    public String deactivateAdmin(@PathVariable int adminId,
-                                  HttpSession session) {
+    public String deleteAdmin(@PathVariable int adminId,
+                              HttpSession session) {
 
         Admin loggedInAdmin = getLoggedInAdmin(session);
 
@@ -252,25 +248,12 @@ public class AdminController {
             return "redirect:/admin/login";
         }
 
-        String message = adminService.deactivateAdmin(adminId, loggedInAdmin.getAdminId());
+        String message = adminService.deleteAdmin(adminId, loggedInAdmin.getAdminId());
 
         return "redirect:/admin/list?message=" + message;
     }
 
-    @GetMapping("/activate/{adminId}")
-    public String activateAdmin(@PathVariable int adminId,
-                                HttpSession session) {
 
-        Admin loggedInAdmin = getLoggedInAdmin(session);
-
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
-
-        String message = adminService.activateAdmin(adminId, loggedInAdmin.getAdminId());
-
-        return "redirect:/admin/list?message=" + message;
-    }
 
     @GetMapping("/users")
     public String listUsers(HttpSession session,
@@ -330,10 +313,6 @@ public class AdminController {
             return "redirect:/admin/users?message=User not found.";
         }
 
-        // Status is controlled only from the User List Activate / Deactivate buttons.
-        // So when editing user details, keep the old database status.
-        user.setStatus(existingUser.getStatus());
-
         String validationMessage = userService.validateUser(user);
 
         if (validationMessage != null) {
@@ -353,21 +332,6 @@ public class AdminController {
         return "redirect:/admin/users?message=User updated successfully.";
     }
 
-    @GetMapping("/users/deactivate/{userId}")
-    public String deactivateUserByAdmin(@PathVariable int userId,
-                                        HttpSession session) {
-
-        Admin loggedInAdmin = getLoggedInAdmin(session);
-
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
-
-        String message = userService.deactivateUser(userId);
-
-        return "redirect:/admin/users?message=" + message;
-    }
-
     private Admin getLoggedInAdmin(HttpSession session) {
         Object adminObject = session.getAttribute("loggedInAdmin");
 
@@ -378,9 +342,9 @@ public class AdminController {
         return (Admin) adminObject;
     }
 
-    @GetMapping("/users/activate/{userId}")
-    public String activateUserByAdmin(@PathVariable int userId,
-                                      HttpSession session) {
+    @GetMapping("/users/delete/{userId}")
+    public String deleteUser(@PathVariable int userId,
+                             HttpSession session) {
 
         Admin loggedInAdmin = getLoggedInAdmin(session);
 
@@ -388,8 +352,10 @@ public class AdminController {
             return "redirect:/admin/login";
         }
 
-        String message = userService.activateUser(userId);
+        userService.deleteUser(userId);
 
-        return "redirect:/admin/users?message=" + message;
+        return "redirect:/admin/users?message=User deleted successfully.";
     }
+
+
 }
