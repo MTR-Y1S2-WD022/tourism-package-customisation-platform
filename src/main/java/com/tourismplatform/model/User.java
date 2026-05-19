@@ -14,9 +14,9 @@ public class User extends Person {
 
     public User(int userId, String fullName, String email, String password,
                 String phoneNumber, String address, String profileImage,
-                String status, LocalDateTime createdAt) {
+                LocalDateTime createdAt) {
 
-        super(fullName, email, password, status, createdAt);
+        super(fullName, email, password, createdAt);
         this.userId = userId;
         this.phoneNumber = phoneNumber;
         this.address = address;

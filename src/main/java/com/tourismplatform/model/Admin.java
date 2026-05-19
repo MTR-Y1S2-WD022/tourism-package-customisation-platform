@@ -12,8 +12,9 @@ public class Admin extends Person {
     }
 
     public Admin(int adminId, String fullName, String email, String password,
-                 String role, String status, boolean isDefault, LocalDateTime createdAt) {
-        super(fullName, email, password, status, createdAt);
+                 String role, boolean isDefault, LocalDateTime createdAt) {
+
+        super(fullName, email, password, createdAt);
         this.adminId = adminId;
         this.role = role;
         this.isDefault = isDefault;
@@ -52,15 +53,6 @@ public class Admin extends Person {
     public String validate() {
         String base = super.validate();
         if (base != null) return base;
-
-        if (role == null || role.trim().isEmpty()) {
-            return "Role is required.";
-        }
-
-        if (!role.equals("ADMIN") && !role.equals("SUPER_ADMIN")) {
-            return "Role must be ADMIN or SUPER_ADMIN.";
-        }
-
         return null;
     }
 

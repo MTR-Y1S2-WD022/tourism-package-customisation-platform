@@ -13,7 +13,7 @@ public class Person {
     public Person() {
     }
 
-    public Person(String fullName, String email, String password, String status, LocalDateTime createdAt) {
+    public Person(String fullName, String email, String password, LocalDateTime createdAt) {
         this.fullName = fullName;
         this.email = email;
         this.password = password;

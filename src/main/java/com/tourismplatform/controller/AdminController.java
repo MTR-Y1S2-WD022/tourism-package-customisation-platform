@@ -134,6 +134,11 @@ public class AdminController {
             return "redirect:/admin/login";
         }
 
+        // Fix: Ensure role is not null before validation runs
+        if (admin.getRole() == null || admin.getRole().trim().isEmpty()) {
+            admin.setRole("ADMIN");
+        }
+
         String validationMessage = adminService.validateAdmin(admin);
 
         if (validationMessage != null) {
@@ -147,7 +152,7 @@ public class AdminController {
         boolean saved = adminService.saveAdmin(admin);
 
         if (!saved) {
-            model.addAttribute("errorMessage", "Failed to save admin.");
+            model.addAttribute("errorMessage", "Failed to save admin. Email might already exist.");
             model.addAttribute("admin", admin);
             model.addAttribute("formTitle", "Add New Admin");
             model.addAttribute("formAction", "/admin/save");
@@ -208,7 +213,6 @@ public class AdminController {
             admin.setDefault(true);
         }
 
-        // If role editing is not allowed, keep the old role.
         if (existingAdmin.isDefault() || !adminService.canManageAdmins(loggedInAdmin)) {
             admin.setRole(existingAdmin.getRole());
         }

@@ -37,8 +37,15 @@ public class AdminService {
 
     public boolean saveAdmin(Admin admin) {
         prepareAdminBeforeSave(admin);
-        int result = adminDAO.save(admin);
-        return result > 0;
+
+        try {
+            int result = adminDAO.save(admin);
+            return result > 0;
+        } catch (Exception e) {
+            // Catches duplicate emails or SQL constraint errors
+            System.out.println("Database Error saving admin: " + e.getMessage());
+            return false;
+        }
     }
 
     public boolean updateAdmin(Admin admin) {
@@ -76,16 +83,12 @@ public class AdminService {
 
 
     private void prepareAdminBeforeSave(Admin admin) {
-        if (admin.getRole() == null || admin.getRole().trim().isEmpty()) {
-            admin.setRole("ADMIN");
-        }
+        admin.setRole("ADMIN");
         admin.setDefault(false);
     }
 
     private void prepareAdminBeforeUpdate(Admin admin) {
-        if (admin.getRole() == null || admin.getRole().trim().isEmpty()) {
-            admin.setRole("ADMIN");
-        }
+        admin.setRole("ADMIN");
     }
 
     public String validateAdmin(Admin admin) {
