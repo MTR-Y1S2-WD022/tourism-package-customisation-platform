@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS bookings (
                                         package_id INT NOT NULL,
                                         coupon_id INT,
 
+
+                                        number_of_members INT DEFAULT 1,
                                         start_date DATE NOT NULL,
                                         end_date DATE NOT NULL,
 

@@ -10,14 +10,20 @@ public class BookingEntity {
     private int userId;
     private int packageId;
     private Integer couponId;
+
+    // ✅ NEW FIELD (IMPORTANT)
+    private int numberOfMembers;
+
     private LocalDate startDate;
     private LocalDate endDate;
     private String hotelType;
     private String mealOption;
     private String guideOption;
+
     private BigDecimal subtotalAmount;
     private BigDecimal discountAmount;
     private BigDecimal totalAmount;
+
     private String bookingStatus;
     private String paymentStatus;
     private LocalDateTime createdAt;
@@ -26,14 +32,18 @@ public class BookingEntity {
     }
 
     public BookingEntity(int bookingId, int userId, int packageId, Integer couponId,
-                         LocalDate startDate, LocalDate endDate, String hotelType,
-                         String mealOption, String guideOption, BigDecimal subtotalAmount,
-                         BigDecimal discountAmount, BigDecimal totalAmount,
-                         String bookingStatus, String paymentStatus, LocalDateTime createdAt) {
+                         int numberOfMembers,
+                         LocalDate startDate, LocalDate endDate,
+                         String hotelType, String mealOption, String guideOption,
+                         BigDecimal subtotalAmount, BigDecimal discountAmount,
+                         BigDecimal totalAmount, String bookingStatus,
+                         String paymentStatus, LocalDateTime createdAt) {
+
         this.bookingId = bookingId;
         this.userId = userId;
         this.packageId = packageId;
         this.couponId = couponId;
+        this.numberOfMembers = numberOfMembers;
         this.startDate = startDate;
         this.endDate = endDate;
         this.hotelType = hotelType;
@@ -47,63 +57,136 @@ public class BookingEntity {
         this.createdAt = createdAt;
     }
 
-    public int getBookingId() { return bookingId; }
+    // =========================
+    // GETTERS & SETTERS
+    // =========================
 
-    public void setBookingId(int bookingId) { this.bookingId = bookingId; }
+    public int getBookingId() {
+        return bookingId;
+    }
 
-    public int getUserId() { return userId; }
+    public void setBookingId(int bookingId) {
+        this.bookingId = bookingId;
+    }
 
-    public void setUserId(int userId) { this.userId = userId; }
+    public int getUserId() {
+        return userId;
+    }
 
-    public int getPackageId() { return packageId; }
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 
-    public void setPackageId(int packageId) { this.packageId = packageId; }
+    public int getPackageId() {
+        return packageId;
+    }
 
-    public Integer getCouponId() { return couponId; }
+    public void setPackageId(int packageId) {
+        this.packageId = packageId;
+    }
 
-    public void setCouponId(Integer couponId) { this.couponId = couponId; }
+    public Integer getCouponId() {
+        return couponId;
+    }
 
-    public LocalDate getStartDate() { return startDate; }
+    public void setCouponId(Integer couponId) {
+        this.couponId = couponId;
+    }
 
-    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
+    // ✅ NEW GETTER & SETTER
+    public int getNumberOfMembers() {
+        return numberOfMembers;
+    }
 
-    public LocalDate getEndDate() { return endDate; }
+    public void setNumberOfMembers(int numberOfMembers) {
+        this.numberOfMembers = numberOfMembers;
+    }
 
-    public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
+    public LocalDate getStartDate() {
+        return startDate;
+    }
 
-    public String getHotelType() { return hotelType; }
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
 
-    public void setHotelType(String hotelType) { this.hotelType = hotelType; }
+    public LocalDate getEndDate() {
+        return endDate;
+    }
 
-    public String getMealOption() { return mealOption; }
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
 
-    public void setMealOption(String mealOption) { this.mealOption = mealOption; }
+    public String getHotelType() {
+        return hotelType;
+    }
 
-    public String getGuideOption() { return guideOption; }
+    public void setHotelType(String hotelType) {
+        this.hotelType = hotelType;
+    }
 
-    public void setGuideOption(String guideOption) { this.guideOption = guideOption; }
+    public String getMealOption() {
+        return mealOption;
+    }
 
-    public BigDecimal getSubtotalAmount() { return subtotalAmount; }
+    public void setMealOption(String mealOption) {
+        this.mealOption = mealOption;
+    }
 
-    public void setSubtotalAmount(BigDecimal subtotalAmount) { this.subtotalAmount = subtotalAmount; }
+    public String getGuideOption() {
+        return guideOption;
+    }
 
-    public BigDecimal getDiscountAmount() { return discountAmount; }
+    public void setGuideOption(String guideOption) {
+        this.guideOption = guideOption;
+    }
 
-    public void setDiscountAmount(BigDecimal discountAmount) { this.discountAmount = discountAmount; }
+    public BigDecimal getSubtotalAmount() {
+        return subtotalAmount;
+    }
 
-    public BigDecimal getTotalAmount() { return totalAmount; }
+    public void setSubtotalAmount(BigDecimal subtotalAmount) {
+        this.subtotalAmount = subtotalAmount;
+    }
 
-    public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
+    public BigDecimal getDiscountAmount() {
+        return discountAmount;
+    }
 
-    public String getBookingStatus() { return bookingStatus; }
+    public void setDiscountAmount(BigDecimal discountAmount) {
+        this.discountAmount = discountAmount;
+    }
 
-    public void setBookingStatus(String bookingStatus) { this.bookingStatus = bookingStatus; }
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
 
-    public String getPaymentStatus() { return paymentStatus; }
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
 
-    public void setPaymentStatus(String paymentStatus) { this.paymentStatus = paymentStatus; }
+    public String getBookingStatus() {
+        return bookingStatus;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setBookingStatus(String bookingStatus) {
+        this.bookingStatus = bookingStatus;
+    }
 
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }

@@ -43,6 +43,7 @@ public class BookingController {
                                      @RequestParam(required = false) List<BigDecimal> selectedDestinationCosts,
                                      @RequestParam(required = false) List<Integer> selectedDestinationIds,
                                      @RequestParam(defaultValue = "0") BigDecimal discountAmount,
+                                     @RequestParam(defaultValue = "1") int numberOfMembers,
                                      Model model) {
 
         if (!bookingService.isValidDateRange(startDate, endDate)) {
@@ -58,20 +59,31 @@ public class BookingController {
                 guideOption
         );
 
-        BigDecimal totalAmount = bookingService.calculateFinalTotal(subtotalAmount, discountAmount);
+        // 🔥 FIXED: include numberOfMembers in calculation
+        BigDecimal totalAmount = bookingService.calculateFinalAmountWithOOP(
+                subtotalAmount,
+                discountAmount,
+                numberOfMembers
+        );
 
         BookingEntity booking = new BookingEntity();
         booking.setUserId(userId);
         booking.setPackageId(packageId);
         booking.setCouponId(couponId);
+
         booking.setStartDate(startDate);
         booking.setEndDate(endDate);
+
         booking.setHotelType(hotelType);
         booking.setMealOption(mealOption);
         booking.setGuideOption(guideOption);
+
         booking.setSubtotalAmount(subtotalAmount);
         booking.setDiscountAmount(discountAmount);
         booking.setTotalAmount(totalAmount);
+
+        booking.setNumberOfMembers(numberOfMembers);
+
         booking.setBookingStatus("PENDING");
         booking.setPaymentStatus("PENDING");
 

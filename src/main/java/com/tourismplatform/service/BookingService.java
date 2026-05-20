@@ -123,7 +123,7 @@ public class BookingService {
     // OOP POLYMORPHISM METHOD (NEW)
     // =========================
 
-    public BigDecimal calculateFinalAmountWithOOP(BigDecimal subtotal, BigDecimal discount) {
+    public BigDecimal calculateFinalAmountWithOOP(BigDecimal subtotal, BigDecimal discount, int members) {
 
         Booking booking;
 
@@ -138,9 +138,9 @@ public class BookingService {
 
         double result = booking.calculateTotal();
 
-        return BigDecimal.valueOf(result);
+        return BigDecimal.valueOf(result)
+                .multiply(BigDecimal.valueOf(members));
     }
-
     // =========================
     // VALIDATION
     // =========================
