@@ -1,0 +1,50 @@
+:root {
+    --ceylon-green: #102A23;
+    --ceylon-gold: #F4A261;
+    --ceylon-bg: #FDFBF7;
+}
+
+/* GLOBAL BACKGROUND */
+body {
+    background-color: var(--ceylon-bg);
+    font-family: Arial, sans-serif;
+}
+
+/* HEADER BAR */
+.navbar {
+    background-color: var(--ceylon-green) !important;
+}
+
+/* GOLD BUTTON */
+.btn-gold {
+    background-color: var(--ceylon-gold);
+    border: none;
+    color: #3b2412;
+    font-weight: 600;
+    border-radius: 999px;
+}
+
+.btn-gold:hover {
+    background-color: #e78f4e;
+}
+
+/* MODERN CARD */
+.modern-card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.modern-card:hover {
+    transform: translateY(-5px);
+}
+
+/* PAGE HEADER */
+.page-header {
+    background: var(--ceylon-green);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
