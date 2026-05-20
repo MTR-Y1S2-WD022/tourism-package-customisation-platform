@@ -1,13 +1,11 @@
 package com.tourismplatform.controller;
 
-import com.tourismplatform.model.Person;
 import com.tourismplatform.model.User;
 import com.tourismplatform.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 
@@ -22,27 +20,32 @@ public class UserController {
 
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
-        User user = new User();
-        model.addAttribute("user", user);
-
+        model.addAttribute("user", new User());
         return "user/register";
     }
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user, Model model) {
 
-        String validationMessage = userService.validateUser(user);
+        // 1. NEW LOGIC: Check if email already exists
+        if (userService.emailExists(user.getEmail())) {
+            model.addAttribute("errorMessage", "This email is already registered. Please log in or use a different email.");
+            model.addAttribute("user", user); // This keeps what they typed so they don't have to start over!
+            return "user/register";
+        }
 
+        // 2. Normal Validation
+        String validationMessage = userService.validate(user);
         if (validationMessage != null) {
             model.addAttribute("errorMessage", validationMessage);
             model.addAttribute("user", user);
             return "user/register";
         }
 
+        // 3. Save User
         boolean registered = userService.registerUser(user);
-
         if (!registered) {
-            model.addAttribute("errorMessage", "Failed to register user.");
+            model.addAttribute("errorMessage", "System error: Failed to register user.");
             model.addAttribute("user", user);
             return "user/register";
         }
@@ -51,8 +54,7 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String showLoginPage(@RequestParam(required = false) String message,
-                                Model model) {
+    public String showLoginPage(@RequestParam(required = false) String message, Model model) {
         model.addAttribute("message", message);
         return "user/login";
     }
@@ -69,112 +71,102 @@ public class UserController {
             model.addAttribute("errorMessage", "Invalid email, password, or inactive user account.");
             return "user/login";
         }
-        
-        Person person = user;
 
-        session.setAttribute("loggedInUser", person);
+        session.setAttribute("loggedInUser", user);
         session.setAttribute("loggedInUserId", user.getUserId());
 
-
-        String dashboard = person.getDashboardPath();
-
-        return "redirect:" + dashboard;
+        return "redirect:/user/dashboard";
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();
+        userService.logout(session);
         return "redirect:/login?message=Logged out successfully.";
     }
 
     @GetMapping("/user/profile")
     public String showProfile(HttpSession session, Model model) {
         User loggedInUser = getLoggedInUser(session);
-
-        if (loggedInUser == null) {
-            return "redirect:/login";
-        }
+        if (loggedInUser == null) return "redirect:/login";
 
         User latestUser = userService.getUserById(loggedInUser.getUserId());
-
-        if (latestUser == null) {
-            session.invalidate();
-            return "redirect:/login?message=User account not found.";
-        }
-
         model.addAttribute("user", latestUser);
-
         return "user/profile";
     }
 
     @PostMapping("/user/update")
     public String updateProfile(@ModelAttribute User user,
-                                @RequestParam("profileImageFile") MultipartFile file,
                                 HttpSession session,
-                                Model model) {
+                                Model model) { // Removed @RequestParam MultipartFile
 
         User loggedInUser = getLoggedInUser(session);
+        if (loggedInUser == null) return "redirect:/login";
 
-        if (loggedInUser == null) {
-            return "redirect:/login";
-        }
+        User existingUser = userService.getUserById(loggedInUser.getUserId());
 
-        user.setUserId(loggedInUser.getUserId());
+        user.setUserId(existingUser.getUserId());
+        user.setEmail(existingUser.getEmail());
+        user.setPassword(existingUser.getPassword());
 
-        // IMAGE HANDLING
-        if (!file.isEmpty()) {
-            try {
-                String fileName = file.getOriginalFilename();
-
-                String uploadDir = "src/main/resources/static/images/";
-
-                File saveFile = new File(uploadDir + fileName);
-                file.transferTo(saveFile);
-
-                user.setProfileImage(fileName);
-
-            } catch (Exception e) {
-                model.addAttribute("errorMessage", "Image upload failed");
-                return "user/profile";
-            }
-        } else {
-            user.setProfileImage(loggedInUser.getProfileImage());
-        }
-
-        boolean updated = userService.updateUser(user);
+        boolean updated = userService.update(user);
 
         if (!updated) {
             model.addAttribute("errorMessage", "Failed to update profile.");
+            model.addAttribute("user", existingUser);
             return "user/profile";
         }
 
-        User updatedUser = userService.getUserById(user.getUserId());
-        session.setAttribute("loggedInUser", updatedUser);
-
+        session.setAttribute("loggedInUser", userService.getUserById(user.getUserId()));
         return "redirect:/user/profile?message=Profile updated successfully.";
+    }
+
+
+    @PostMapping("/user/change-password")
+    public String changePassword(@RequestParam String oldPassword,
+                                 @RequestParam String newPassword,
+                                 @RequestParam String confirmPassword,
+                                 HttpSession session,
+                                 Model model) {
+
+        User loggedInUser = getLoggedInUser(session);
+        if (loggedInUser == null) return "redirect:/login";
+
+        User existingUser = userService.getUserById(loggedInUser.getUserId());
+
+        if (!existingUser.getPassword().equals(oldPassword)) {
+            model.addAttribute("errorMessage", "Incorrect current password.");
+            model.addAttribute("user", existingUser);
+            return "user/profile";
+        }
+
+        if (!newPassword.equals(confirmPassword)) {
+            model.addAttribute("errorMessage", "New passwords do not match.");
+            model.addAttribute("user", existingUser);
+            return "user/profile";
+        }
+
+        if (newPassword.length() < 8) {
+            model.addAttribute("errorMessage", "New password must be at least 8 characters.");
+            model.addAttribute("user", existingUser);
+            return "user/profile";
+        }
+
+        existingUser.setPassword(newPassword);
+        userService.update(existingUser); // Polymorphic update call
+
+        return "redirect:/user/profile?message=Password changed successfully.";
     }
 
     @GetMapping("/user/dashboard")
     public String showUserDashboard(HttpSession session, Model model) {
-
         User user = getLoggedInUser(session);
-
-        if (user == null) {
-            return "redirect:/login";
-        }
-
+        if (user == null) return "redirect:/login";
         model.addAttribute("user", user);
-
         return "user/dashboard";
     }
 
     private User getLoggedInUser(HttpSession session) {
         Object userObject = session.getAttribute("loggedInUser");
-
-        if (userObject == null) {
-            return null;
-        }
-
-        return (User) userObject;
+        return (userObject instanceof User) ? (User) userObject : null;
     }
 }

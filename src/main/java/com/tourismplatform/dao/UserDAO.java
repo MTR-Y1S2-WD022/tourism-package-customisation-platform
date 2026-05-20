@@ -25,7 +25,6 @@ public class UserDAO {
         user.setPassword(rs.getString("password"));
         user.setPhoneNumber(rs.getString("phone_number"));
         user.setAddress(rs.getString("address"));
-        user.setProfileImage(rs.getString("profile_image"));
 
         if (rs.getTimestamp("created_at") != null) {
             user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
@@ -76,8 +75,8 @@ public class UserDAO {
 
     public int save(User user) {
         String sql = """
-                INSERT INTO users (full_name, email, password, phone_number, address, profile_image)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO users (full_name, email, password, phone_number, address)
+                VALUES (?, ?, ?, ?, ?)
                 """;
 
         return jdbcTemplate.update(
@@ -86,15 +85,14 @@ public class UserDAO {
                 user.getEmail(),
                 user.getPassword(),
                 user.getPhoneNumber(),
-                user.getAddress(),
-                user.getProfileImage()
+                user.getAddress()
         );
     }
 
     public int update(User user) {
         String sql = """
         UPDATE users
-        SET full_name=?, email=?, password=?, phone_number=?, address=?, profile_image=?
+        SET full_name=?, email=?, password=?, phone_number=?, address=?
         WHERE user_id=?
         """;
 
@@ -105,7 +103,6 @@ public class UserDAO {
                 user.getPassword(),
                 user.getPhoneNumber(),
                 user.getAddress(),
-                user.getProfileImage(),
                 user.getUserId()
         );
     }
@@ -113,6 +110,12 @@ public class UserDAO {
     public int deleteUser(int userId) {
         String sql = "DELETE FROM users WHERE user_id = ?";
         return jdbcTemplate.update(sql, userId);
+    }
+
+    public boolean emailExists(String email) {
+        String sql = "SELECT COUNT(*) FROM users WHERE email = ?";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, email);
+        return count != null && count > 0;
     }
 
 

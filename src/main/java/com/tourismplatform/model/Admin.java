@@ -13,7 +13,6 @@ public class Admin extends Person {
 
     public Admin(int adminId, String fullName, String email, String password,
                  String role, boolean isDefault, LocalDateTime createdAt) {
-
         super(fullName, email, password, createdAt);
         this.adminId = adminId;
         this.role = role;
@@ -43,18 +42,4 @@ public class Admin extends Person {
     public void setDefault(boolean aDefault) {
         isDefault = aDefault;
     }
-
-    @Override
-    public String getDashboardPath() {
-        return "/admin/dashboard";
-    }
-
-    @Override
-    public String validate() {
-        String base = super.validate();
-        if (base != null) return base;
-        return null;
-    }
-
-
 }

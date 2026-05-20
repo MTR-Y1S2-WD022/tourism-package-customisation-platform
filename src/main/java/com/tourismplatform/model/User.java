@@ -3,13 +3,18 @@ package com.tourismplatform.model;
 import java.time.LocalDateTime;
 
 public class User extends Person {
-
     private int userId;
     private String phoneNumber;
     private String address;
-    private String profileImage;
 
-    public User() {
+    public User() {}
+
+    public User(int userId, String fullName, String email, String password,
+                String phoneNumber, String address, LocalDateTime createdAt) {
+        super(fullName, email, password, createdAt);
+        this.userId = userId;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
     }
 
     public User(int userId, String fullName, String email, String password,
@@ -20,7 +25,6 @@ public class User extends Person {
         this.userId = userId;
         this.phoneNumber = phoneNumber;
         this.address = address;
-        this.profileImage = profileImage;
     }
 
     public int getUserId() {
@@ -46,31 +50,5 @@ public class User extends Person {
     public void setAddress(String address) {
         this.address = address;
     }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
-
-    @Override
-    public String getDashboardPath() {
-        return "/user/dashboard";
-    }
-
-    @Override
-    public String validate() {
-        String base = super.validate();
-        if (base != null) return base;
-
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-            return "Phone number is required.";
-        }
-
-        return null;
-    }
-
 
 }

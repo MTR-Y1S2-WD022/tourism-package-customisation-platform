@@ -1,7 +1,6 @@
 package com.tourismplatform.controller;
 
 import com.tourismplatform.model.Admin;
-import com.tourismplatform.model.Person;
 import com.tourismplatform.model.User;
 import com.tourismplatform.service.AdminService;
 import com.tourismplatform.service.UserService;
@@ -16,9 +15,7 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
 
-
     private final AdminService adminService;
-
     private final UserService userService;
 
     public AdminController(AdminService adminService, UserService userService) {
@@ -44,25 +41,19 @@ public class AdminController {
             return "admin/admin-login";
         }
 
-        Person person = admin;
-
         session.setAttribute("loggedInAdmin", admin);
-
-        String dashboard = person.getDashboardPath();
-
-        return "redirect:" + dashboard;
+        return "redirect:/admin/dashboard";
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();
+        adminService.logout(session);
         return "redirect:/admin/login";
     }
 
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
-        Admin loggedInAdmin = getLoggedInAdmin(session);
-
+        Admin loggedInAdmin = (Admin) session.getAttribute("loggedInAdmin");
         if (loggedInAdmin == null) {
             return "redirect:/admin/login";
         }
@@ -71,19 +62,20 @@ public class AdminController {
         return "admin/dashboard";
     }
 
+    private Admin getLoggedInAdmin(HttpSession session) {
+        Object adminObject = session.getAttribute("loggedInAdmin");
+        return (adminObject instanceof Admin) ? (Admin) adminObject : null;
+    }
+
     @GetMapping("/list")
     public String listAdmins(HttpSession session,
                              Model model,
                              @RequestParam(required = false) String message) {
 
         Admin loggedInAdmin = getLoggedInAdmin(session);
-
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
+        if (loggedInAdmin == null) return "redirect:/admin/login";
 
         List<Admin> admins = adminService.getAllAdmins();
-
         model.addAttribute("admins", admins);
         model.addAttribute("loggedInAdmin", loggedInAdmin);
         model.addAttribute("loggedInAdminId", loggedInAdmin.getAdminId());
@@ -93,21 +85,13 @@ public class AdminController {
     }
 
     @GetMapping("/edit/{adminId}")
-    public String showEditAdminForm(@PathVariable int adminId,
-                                    HttpSession session,
-                                    Model model) {
+    public String showEditAdminForm(@PathVariable int adminId, HttpSession session, Model model) {
 
         Admin loggedInAdmin = getLoggedInAdmin(session);
-
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
+        if (loggedInAdmin == null) return "redirect:/admin/login";
 
         Admin admin = adminService.getAdminById(adminId);
-
-        if (admin == null) {
-            return "redirect:/admin/list?message=Admin not found.";
-        }
+        if (admin == null) return "redirect:/admin/list?message=Admin not found.";
 
         if (!adminService.canEditAdmin(admin, loggedInAdmin)) {
             return "redirect:/admin/list?message=You do not have permission to edit this admin.";
@@ -124,22 +108,16 @@ public class AdminController {
     }
 
     @PostMapping("/save")
-    public String saveAdmin(@ModelAttribute Admin admin,
-                            HttpSession session,
-                            Model model) {
+    public String saveAdmin(@ModelAttribute Admin admin, HttpSession session, Model model) {
 
         Admin loggedInAdmin = getLoggedInAdmin(session);
+        if (loggedInAdmin == null) return "redirect:/admin/login";
 
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
-
-        // Fix: Ensure role is not null before validation runs
         if (admin.getRole() == null || admin.getRole().trim().isEmpty()) {
             admin.setRole("ADMIN");
         }
 
-        String validationMessage = adminService.validateAdmin(admin);
+        String validationMessage = adminService.validate(admin);
 
         if (validationMessage != null) {
             model.addAttribute("errorMessage", validationMessage);
@@ -162,14 +140,10 @@ public class AdminController {
         return "redirect:/admin/list?message=Admin saved successfully.";
     }
 
-
     @GetMapping("/new")
     public String showAddAdminForm(HttpSession session, Model model) {
         Admin loggedInAdmin = getLoggedInAdmin(session);
-
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
+        if (loggedInAdmin == null) return "redirect:/admin/login";
 
         if (!adminService.canManageAdmins(loggedInAdmin)) {
             return "redirect:/admin/list?message=You do not have permission to add admins.";
@@ -187,26 +161,17 @@ public class AdminController {
     }
 
     @PostMapping("/update")
-    public String updateAdmin(@ModelAttribute Admin admin,
-                              HttpSession session,
-                              Model model) {
+    public String updateAdmin(@ModelAttribute Admin admin, HttpSession session, Model model) {
 
         Admin loggedInAdmin = getLoggedInAdmin(session);
-
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
+        if (loggedInAdmin == null) return "redirect:/admin/login";
 
         Admin existingAdmin = adminService.getAdminById(admin.getAdminId());
-
-        if (existingAdmin == null) {
-            return "redirect:/admin/list?message=Admin not found.";
-        }
+        if (existingAdmin == null) return "redirect:/admin/list?message=Admin not found.";
 
         if (!adminService.canEditAdmin(existingAdmin, loggedInAdmin)) {
             return "redirect:/admin/list?message=You do not have permission to update this admin.";
         }
-
 
         if (existingAdmin.isDefault()) {
             admin.setRole("SUPER_ADMIN");
@@ -217,7 +182,7 @@ public class AdminController {
             admin.setRole(existingAdmin.getRole());
         }
 
-        String validationMessage = adminService.validateAdmin(admin);
+        String validationMessage = adminService.validate(admin);
 
         if (validationMessage != null) {
             model.addAttribute("errorMessage", validationMessage);
@@ -228,7 +193,7 @@ public class AdminController {
             return "admin/admin-form";
         }
 
-        boolean updated = adminService.updateAdmin(admin);
+        boolean updated = adminService.update(admin);
 
         if (!updated) {
             model.addAttribute("errorMessage", "Failed to update admin.");
@@ -243,123 +208,78 @@ public class AdminController {
     }
 
     @GetMapping("/delete/{adminId}")
-    public String deleteAdmin(@PathVariable int adminId,
-                              HttpSession session) {
-
+    public String deleteAdmin(@PathVariable int adminId, HttpSession session) {
         Admin loggedInAdmin = getLoggedInAdmin(session);
-
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
+        if (loggedInAdmin == null) return "redirect:/admin/login";
 
         String message = adminService.deleteAdmin(adminId, loggedInAdmin.getAdminId());
-
         return "redirect:/admin/list?message=" + message;
     }
 
-
-
     @GetMapping("/users")
-    public String listUsers(HttpSession session,
-                            Model model,
-                            @RequestParam(required = false) String message) {
-
+    public String listUsers(HttpSession session, Model model, @RequestParam(required = false) String message) {
         Admin loggedInAdmin = getLoggedInAdmin(session);
-
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
+        if (loggedInAdmin == null) return "redirect:/admin/login";
 
         List<User> users = userService.getAllUsers();
-
         model.addAttribute("users", users);
         model.addAttribute("message", message);
 
         return "admin/user-list";
     }
 
-    @GetMapping("/users/edit/{userId}")
-    public String showEditUserForm(@PathVariable int userId,
-                                   HttpSession session,
-                                   Model model) {
+    @GetMapping("/users/edit/{id}")
+    public String showEditUserForm(@PathVariable("id") int id, HttpSession session, Model model) {
+        // Security Check: Is admin logged in?
+        Admin loggedInAdmin = (Admin) session.getAttribute("loggedInAdmin");
+        if (loggedInAdmin == null) return "redirect:/admin/login";
 
-        Admin loggedInAdmin = getLoggedInAdmin(session);
-
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
-
-        User user = userService.getUserById(userId);
+        // Fetch the user from the database
+        User user = userService.getUserById(id);
 
         if (user == null) {
-            return "redirect:/admin/users?message=User not found.";
+            return "redirect:/admin/users?error=User not found";
         }
 
         model.addAttribute("user", user);
-
-        return "user/user-form";
+        return "admin/user-edit"; // This tells Spring to load admin/user-edit.html
     }
 
+    // 2. Save the Updates
     @PostMapping("/users/update")
-    public String updateUserByAdmin(@ModelAttribute User user,
-                                    HttpSession session,
-                                    Model model) {
+    public String updateUserByAdmin(@ModelAttribute User user, HttpSession session, Model model) {
+        // Security Check
+        Admin loggedInAdmin = (Admin) session.getAttribute("loggedInAdmin");
+        if (loggedInAdmin == null) return "redirect:/admin/login";
 
-        Admin loggedInAdmin = getLoggedInAdmin(session);
-
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
-
+        // If the admin left the password blank, keep the old password
         User existingUser = userService.getUserById(user.getUserId());
-
-        if (existingUser == null) {
-            return "redirect:/admin/users?message=User not found.";
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            user.setPassword(existingUser.getPassword());
         }
 
-        String validationMessage = userService.validateUser(user);
-
-        if (validationMessage != null) {
-            model.addAttribute("errorMessage", validationMessage);
-            model.addAttribute("user", user);
-            return "user/user-form";
-        }
-
-        boolean updated = userService.updateUser(user);
+        // Use your AccountOperations overridden update method
+        boolean updated = userService.update(user);
 
         if (!updated) {
-            model.addAttribute("errorMessage", "Failed to update user.");
+            model.addAttribute("errorMessage", "Failed to update user details.");
             model.addAttribute("user", user);
-            return "user/user-form";
+            return "admin/user-edit";
         }
 
         return "redirect:/admin/users?message=User updated successfully.";
     }
 
-    private Admin getLoggedInAdmin(HttpSession session) {
-        Object adminObject = session.getAttribute("loggedInAdmin");
-
-        if (adminObject == null) {
-            return null;
-        }
-
-        return (Admin) adminObject;
-    }
-
-    @GetMapping("/users/delete/{userId}")
-    public String deleteUser(@PathVariable int userId,
-                             HttpSession session) {
-
+    @GetMapping("/users/delete/{id}")
+    public String deleteUser(@PathVariable("id") int id, HttpSession session) {
+        // Security Check
         Admin loggedInAdmin = getLoggedInAdmin(session);
+        if (loggedInAdmin == null) return "redirect:/admin/login";
 
-        if (loggedInAdmin == null) {
-            return "redirect:/admin/login";
-        }
 
-        userService.deleteUser(userId);
+        userService.deleteUser(id);
 
-        return "redirect:/admin/users?message=User deleted successfully.";
+        return "redirect:/admin/users?message=User successfully deleted.";
     }
-
 
 }

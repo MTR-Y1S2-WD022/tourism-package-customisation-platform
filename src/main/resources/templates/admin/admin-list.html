@@ -25,13 +25,6 @@
             border-radius: 15px;
         }
 
-        .btn-gold {
-            background: var(--ceylon-gold);
-            border: none;
-            font-weight: 600;
-            border-radius: 999px;
-        }
-
         .table-card {
             background: white;
             border-radius: 15px;
@@ -169,18 +162,18 @@
 
                 </td>
 
-                <td>
-
+                <td class="text-center">
                     <!-- EDIT -->
                     <a th:if="${loggedInAdmin.role == 'SUPER_ADMIN' || loggedInAdmin.default}"
                        th:href="@{'/admin/edit/' + ${admin.adminId}}"
-                       class="btn btn-sm btn-warning">
-                        Edit
+                       class="btn btn-sm btn-warning btn-sm me-1 rounded-pill px-3 shadow-sm">
+                        <i class="bi bi-pencil-square"></i>Edit
                     </a>
 
                     <a th:href="@{'/admin/delete/' + ${admin.adminId}}"
-                       class="btn btn-danger btn-sm">
-                        Delete
+                       class="btn btn-danger btn-sm rounded-pill px-3 shadow-sm"
+                       onclick="return confirm('Are you sure you want to delete this admin?');">
+                        <i class="bi bi-trash-fill"></i> Delete
                     </a>
 
 
