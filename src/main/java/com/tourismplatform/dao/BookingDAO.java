@@ -1,6 +1,6 @@
 package com.tourismplatform.dao;
 
-import com.tourismplatform.model.BookingEntity;
+import com.tourismplatform.model.Booking;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -22,8 +22,8 @@ public class BookingDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    private final RowMapper<BookingEntity> bookingRowMapper = (rs, rowNum) -> {
-        BookingEntity booking = new BookingEntity();
+    private final RowMapper<Booking> bookingRowMapper = (rs, rowNum) -> {
+        Booking booking = new Booking();
 
         booking.setBookingId(rs.getInt("booking_id"));
         booking.setUserId(rs.getInt("user_id"));
@@ -55,7 +55,7 @@ public class BookingDAO {
         return booking;
     };
 
-    public int saveBooking(BookingEntity booking) {
+    public int saveBooking(Booking booking) {
         String sql = """
                 INSERT INTO bookings
                 (user_id, package_id, coupon_id, start_date, end_date,
@@ -112,12 +112,12 @@ public class BookingDAO {
         jdbcTemplate.update(sql, bookingId, destinationId);
     }
 
-    public List<BookingEntity> findAllBookings() {
+    public List<Booking> findAllBookings() {
         String sql = "SELECT * FROM bookings ORDER BY created_at DESC";
         return jdbcTemplate.query(sql, bookingRowMapper);
     }
 
-    public BookingEntity findBookingById(int bookingId) {
+    public Booking findBookingById(int bookingId) {
         String sql = "SELECT * FROM bookings WHERE booking_id = ?";
         return jdbcTemplate.queryForObject(sql, bookingRowMapper, bookingId);
     }
