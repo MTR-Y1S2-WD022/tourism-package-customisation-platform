@@ -1,16 +1,79 @@
 CREATE DATABASE IF NOT EXISTS tourism_package_customisation_db;
 USE tourism_package_customisation_db;
 
-CREATE TABLE IF NOT EXISTS reviews (
-     review_id INT PRIMARY KEY AUTO_INCREMENT,
-     booking_id INT NOT NULL,
-     user_id INT NOT NULL,
+CREATE TABLE IF NOT EXISTS admins (
+    admin_id INT PRIMARY KEY AUTO_INCREMENT,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    role VARCHAR(20) DEFAULT 'ADMIN',
+    status VARCHAR(20) DEFAULT 'ACTIVE',
+    is_default BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    INSERT INTO admins (
+        full_name,
+        email,
+        password,
+        role,
+        status,
+        is_default
+    )
+        VALUES (
+            'Default Admin',
+            'admin@gmail.com',
+            'admin123',
+            'SUPER_ADMIN',
+            'ACTIVE',
+            TRUE
+        );
+
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    full_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+    address VARCHAR(255),
+    profile_image VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'ACTIVE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    
+CREATE TABLE tour_packages (
+    package_id INT PRIMARY KEY AUTO_INCREMENT,
+    package_name VARCHAR(100) NOT NULL,
+    location_area VARCHAR(100) NOT NULL,
+    description TEXT,
+    base_price DECIMAL(10,2) NOT NULL,
+    image_url VARCHAR(255),
+    status VARCHAR(20) DEFAULT 'ACTIVE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE destinations (
+     destination_id INT PRIMARY KEY AUTO_INCREMENT,
+     destination_name VARCHAR(100) NOT NULL,
+     description TEXT,
+     image_url VARCHAR(255),
+     google_map_url VARCHAR(500),
+     base_cost DECIMAL(10,2) DEFAULT 0.00,
+     status VARCHAR(20) DEFAULT 'ACTIVE',
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE  IF NOT EXISTS package_destinations (
+     id INT PRIMARY KEY AUTO_INCREMENT,
      package_id INT NOT NULL,
-     rating INT NOT NULL,
-     comment TEXT,
-     status VARCHAR(20) DEFAULT 'VISIBLE',
-                                  
-     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     destination_id INT NOT NULL,
+
+     FOREIGN KEY (package_id) REFERENCES tour_packages(package_id)
+        ON DELETE CASCADE,
+
+     FOREIGN KEY (destination_id) REFERENCES destinations(destination_id)
+        ON DELETE CASCADE
+    );
 
 CREATE TABLE IF NOT EXISTS bookings (
       booking_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -55,3 +118,33 @@ CREATE TABLE IF NOT EXISTS booking_destinations (
       FOREIGN KEY (destination_id) REFERENCES destinations(destination_id)
       ON DELETE CASCADE
       );
+
+CREATE TABLE IF NOT EXISTS booking_cancellation_requests (
+     request_id INT PRIMARY KEY AUTO_INCREMENT,
+     booking_id INT NOT NULL,
+     user_id INT NOT NULL,
+
+     reason TEXT NOT NULL,
+     request_status VARCHAR(20) DEFAULT 'PENDING',
+
+     admin_id INT,
+     admin_response TEXT,
+
+     refund_type VARCHAR(20) DEFAULT 'NONE',
+     refund_amount DECIMAL(10,2) DEFAULT 0.00,
+
+     requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     processed_at TIMESTAMP NULL,
+
+     FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
+        ON DELETE CASCADE,
+
+     FOREIGN KEY (user_id) REFERENCES users(user_id)
+        ON DELETE CASCADE,
+
+     FOREIGN KEY (admin_id) REFERENCES admins(admin_id)
+        ON DELETE SET NULL
+    );
+    
+
+

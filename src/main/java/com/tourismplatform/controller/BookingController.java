@@ -59,8 +59,9 @@ public class BookingController {
         );
 
         BigDecimal totalAmount = bookingService.calculateFinalTotal(subtotalAmount, discountAmount);
-
-        Booking booking = new Booking();
+        
+        Booking booking = new Booking(); 
+      
         booking.setUserId(userId);
         booking.setPackageId(packageId);
         booking.setCouponId(couponId);
@@ -84,7 +85,7 @@ public class BookingController {
     @PostMapping("/booking/save")
     public String saveBooking(@ModelAttribute Booking booking,
                               @RequestParam(required = false) List<Integer> selectedDestinationIds) {
-
+ 
         booking.setBookingStatus("PENDING");
         booking.setPaymentStatus("PENDING");
 
@@ -103,7 +104,7 @@ public class BookingController {
 
     @GetMapping("/booking/details/{bookingId}")
     public String showBookingDetails(@PathVariable int bookingId, Model model) {
-        Booking booking = bookingService.getBookingById(bookingId);
+        Booking booking = bookingService.getBookingById(bookingId);      
         List<Integer> destinationIds = bookingService.getDestinationIdsByBookingId(bookingId);
 
         model.addAttribute("booking", booking);
@@ -115,6 +116,7 @@ public class BookingController {
     @GetMapping("/admin/bookings")
     public String showAdminBookingList(Model model) {
         List<Booking> bookings = bookingService.getAllBookings();
+      
         model.addAttribute("bookings", bookings);
 
         return "admin/booking-list";

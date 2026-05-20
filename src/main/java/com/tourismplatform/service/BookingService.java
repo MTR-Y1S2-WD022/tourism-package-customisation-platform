@@ -2,6 +2,9 @@ package com.tourismplatform.service;
 
 import com.tourismplatform.dao.BookingDAO;
 import com.tourismplatform.model.Booking;
+import com.tourismplatform.model.Booking;
+import com.tourismplatform.model.NormalBooking;
+import com.tourismplatform.model.CouponBooking;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
