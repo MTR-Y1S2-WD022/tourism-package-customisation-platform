@@ -2,13 +2,13 @@ package com.tourismplatform.service;
 
 import com.tourismplatform.dao.UserDAO;
 import com.tourismplatform.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class UserService {
+public class UserService implements AccountOperations<User> {
 
     private final UserDAO userDAO;
 
@@ -16,17 +16,41 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
+    // 1. RUNTIME POLYMORPHISM (OVERRIDING INTERFACE METHODS)
+
+    @Override
     public User login(String email, String password) {
-        if (email == null || email.trim().isEmpty()) {
+        if (email == null || email.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             return null;
         }
-
-        if (password == null || password.trim().isEmpty()) {
-            return null;
-        }
-
         return userDAO.findByEmailAndPassword(email.trim(), password.trim());
     }
+
+    @Override
+    public boolean update(User user) {
+        prepareUserBeforeUpdate(user);
+        return userDAO.update(user) > 0;
+    }
+
+    @Override
+    public void logout(HttpSession session) {
+        session.removeAttribute("loggedInUser");
+        session.removeAttribute("loggedInUserId");
+        session.invalidate();
+    }
+
+    @Override
+    public String validate(User user) {
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) return "Full name is required.";
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) return "Email is required.";
+        if (!user.getEmail().contains("@")) return "Please enter a valid email address.";
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) return "Password is required.";
+        if (user.getPassword().length() < 8) return "Password must have at least 8 characters.";
+        if (user.getPhoneNumber() == null || user.getPhoneNumber().trim().isEmpty()) return "Phone number is required.";
+        return null;
+    }
+
+    // OTHER METHODS
 
     public List<User> getAllUsers() {
         return userDAO.findAll();
@@ -36,120 +60,28 @@ public class UserService {
         return userDAO.findById(userId);
     }
 
+    public boolean emailExists(String email) {
+        return userDAO.emailExists(email);
+    }
+
     public boolean registerUser(User user) {
         prepareUserBeforeSave(user);
-        int result = userDAO.save(user);
-        return result > 0;
+        return userDAO.save(user) > 0;
     }
 
-    public boolean updateUser(User user) {
-        prepareUserBeforeUpdate(user);
-        int result = userDAO.update(user);
-        return result > 0;
-    }
-
-    public String deactivateUser(int userId) {
-        User user = userDAO.findById(userId);
-
-        if (user == null) {
-            return "User not found.";
-        }
-
-        int result = userDAO.deactivate(userId);
-
-        if (result > 0) {
-            return "User deactivated successfully.";
-        }
-
-        return "Failed to deactivate user.";
-    }
-
-    public String activateUser(int userId) {
-        User user = userDAO.findById(userId);
-
-        if (user == null) {
-            return "User not found.";
-        }
-
-        int result = userDAO.activate(userId);
-
-        if (result > 0) {
-            return "User activated successfully.";
-        }
-
-        return "Failed to activate user.";
+    public void deleteUser(int userId) {
+        userDAO.deleteUser(userId);
     }
 
     private void prepareUserBeforeSave(User user) {
-        if (user.getStatus() == null || user.getStatus().trim().isEmpty()) {
-            user.setStatus("ACTIVE");
-        }
-
-        if (user.getProfileImage() == null || user.getProfileImage().trim().isEmpty()) {
-            user.setProfileImage(null);
-        }
-
         if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
             user.setAddress(null);
         }
     }
 
     private void prepareUserBeforeUpdate(User user) {
-        if (user.getStatus() == null || user.getStatus().trim().isEmpty()) {
-            user.setStatus("ACTIVE");
-        }
-
-        if (user.getProfileImage() == null || user.getProfileImage().trim().isEmpty()) {
-            user.setProfileImage(null);
-        }
-
         if (user.getAddress() == null || user.getAddress().trim().isEmpty()) {
             user.setAddress(null);
         }
     }
-
-    public String validateUser(User user) {
-        if (user == null) {
-            return "User details are missing.";
-        }
-
-        if (isBlank(user.getFullName())) {
-            return "Full name is required.";
-        }
-
-        if (isBlank(user.getEmail())) {
-            return "Email is required.";
-        }
-
-        if (!user.getEmail().contains("@")) {
-            return "Please enter a valid email address.";
-        }
-
-        if (isBlank(user.getPassword())) {
-            return "Password is required.";
-        }
-
-        if (user.getPassword().length() < 8) {
-            return "Password must have at least 8 characters.";
-        }
-
-        if (isBlank(user.getPhoneNumber())) {
-            return "Phone number is required.";
-        }
-
-        if (isBlank(user.getStatus())) {
-            return "Status is required.";
-        }
-
-        if (!user.getStatus().equals("ACTIVE") && !user.getStatus().equals("INACTIVE")) {
-            return "Status must be ACTIVE or INACTIVE.";
-        }
-
-        return null;
-    }
-
-    private boolean isBlank(String value) {
-        return value == null || value.trim().isEmpty();
-    }
-
 }

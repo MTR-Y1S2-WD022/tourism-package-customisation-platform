@@ -2,23 +2,20 @@ package com.tourismplatform.model;
 
 import java.time.LocalDateTime;
 
-//dto
-public class Person {
+public abstract class Person {
 
     protected String fullName;
     protected String email;
     protected String password;
-    protected String status;
     protected LocalDateTime createdAt;
 
     public Person() {
     }
 
-    public Person(String fullName, String email, String password, String status, LocalDateTime createdAt) {
+    public Person(String fullName, String email, String password, LocalDateTime createdAt) {
         this.fullName = fullName;
         this.email = email;
         this.password = password;
-        this.status = status;
         this.createdAt = createdAt;
     }
 
@@ -46,14 +43,6 @@ public class Person {
         this.password = password;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -61,9 +50,4 @@ public class Person {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
-    public String getDashboardPath() {
-        return "/home";
-    }
-
 }

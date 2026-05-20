@@ -25,13 +25,6 @@
             border-radius: 15px;
         }
 
-        .btn-gold {
-            background: var(--ceylon-gold);
-            border: none;
-            font-weight: 600;
-            border-radius: 999px;
-        }
-
         .table-card {
             background: white;
             border-radius: 15px;
@@ -39,15 +32,73 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
         }
 
-        .badge-role {
-            padding: 6px 12px;
-            border-radius: 999px;
+        .badge-super {
+            background: linear-gradient(135deg, #ff0033, #8b0000);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-weight: bold;
             font-size: 12px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 12px rgba(255, 0, 60, 0.6);
+            text-transform: uppercase;
+        }
+        .badge-super {
+            background: linear-gradient(135deg, #ff0033, #8b0000);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 12px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 12px rgba(255, 0, 60, 0.6);
+            text-transform: uppercase;
         }
 
-        .super { background: #d4af37; color: black; }
-        .admin { background: #102A23; color: white; }
-        .default { background: #0d6efd; color: white; }
+        .badge-admin {
+            background: linear-gradient(135deg, #007bff, #001f4d);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 12px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 12px rgba(0, 123, 255, 0.5);
+            text-transform: uppercase;
+        }
+
+        .btn-add-admin {
+            background: linear-gradient(135deg, #F4A261, #E76F51);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 8px 16px;
+            box-shadow: 0 0 12px rgba(244, 162, 97, 0.5);
+            transition: 0.3s ease;
+        }
+
+        .btn-add-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(244, 162, 97, 0.8);
+        }
+
+        .btn-back-dashboard {
+            background: linear-gradient(135deg, #007bff, #001f4d);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 999px;
+            padding: 8px 16px;
+            box-shadow: 0 0 12px rgba(0, 123, 255, 0.4);
+            transition: 0.3s ease;
+        }
+
+        .btn-back-dashboard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(0, 123, 255, 0.7);
+        }
+
     </style>
 </head>
 
@@ -60,6 +111,25 @@
     </div>
 
     <div class="table-card">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <h5 class="mb-0 fw-bold">Admin List</h5>
+
+            <div class="d-flex gap-2">
+
+                <!-- BACK TO DASHBOARD -->
+                <a href="/admin/dashboard" class="btn btn-back-dashboard">
+                    ← Dashboard
+                </a>
+
+                <!-- ADD ADMIN -->
+                <a href="/admin/new" class="btn btn-add-admin">
+                    + Add Admin
+                </a>
+
+            </div>
+
+        </div>
 
         <table class="table table-hover align-middle">
             <thead class="table-dark">
@@ -68,7 +138,6 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th>Status</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -80,35 +149,33 @@
                 <td th:text="${admin.email}"></td>
 
                 <td>
-                    <span th:if="${admin.default}" class="badge-role default">DEFAULT ADMIN</span>
-                    <span th:if="${admin.role == 'SUPER_ADMIN' && !admin.default}" class="badge-role super">SUPER ADMIN</span>
-                    <span th:if="${admin.role == 'ADMIN'}" class="badge-role admin">ADMIN</span>
+
+                    <span th:if="${admin.role == 'SUPER_ADMIN' || admin.default}"
+                          class="badge-super">
+                          SUPER ADMIN
+                    </span>
+
+                    <span th:if="${admin.role == 'ADMIN' && !admin.default}"
+                          class="badge-admin">
+                          ADMIN
+                    </span>
+
                 </td>
 
-                <td th:text="${admin.status}"></td>
-
-                <td>
-
+                <td class="text-center">
                     <!-- EDIT -->
                     <a th:if="${loggedInAdmin.role == 'SUPER_ADMIN' || loggedInAdmin.default}"
                        th:href="@{'/admin/edit/' + ${admin.adminId}}"
-                       class="btn btn-sm btn-warning">
-                        Edit
+                       class="btn btn-sm btn-warning btn-sm me-1 rounded-pill px-3 shadow-sm">
+                        <i class="bi bi-pencil-square"></i>Edit
                     </a>
 
-                    <!-- ACTIVATE -->
-                    <a th:if="${admin.status == 'INACTIVE'}"
-                       th:href="@{'/admin/activate/' + ${admin.adminId}}"
-                       class="btn btn-sm btn-success">
-                        Activate
+                    <a th:href="@{'/admin/delete/' + ${admin.adminId}}"
+                       class="btn btn-danger btn-sm rounded-pill px-3 shadow-sm"
+                       onclick="return confirm('Are you sure you want to delete this admin?');">
+                        <i class="bi bi-trash-fill"></i> Delete
                     </a>
 
-                    <!-- DEACTIVATE -->
-                    <a th:if="${admin.status == 'ACTIVE'}"
-                       th:href="@{'/admin/delete/' + ${admin.adminId}}"
-                       class="btn btn-sm btn-danger">
-                        Deactivate
-                    </a>
 
                 </td>
             </tr>

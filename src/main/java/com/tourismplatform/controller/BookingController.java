@@ -1,6 +1,6 @@
 package com.tourismplatform.controller;
 
-import com.tourismplatform.model.BookingEntity;
+import com.tourismplatform.model.Booking;
 import com.tourismplatform.service.BookingService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -59,14 +59,14 @@ public class BookingController {
                 guideOption
         );
 
-        // 🔥 FIXED: include numberOfMembers in calculation
+        // includes numberOfMembers in final amount calculation
         BigDecimal totalAmount = bookingService.calculateFinalAmountWithOOP(
                 subtotalAmount,
                 discountAmount,
                 numberOfMembers
         );
 
-        BookingEntity booking = new BookingEntity();
+        Booking booking = new Booking();
         booking.setUserId(userId);
         booking.setPackageId(packageId);
         booking.setCouponId(couponId);
@@ -94,7 +94,7 @@ public class BookingController {
     }
 
     @PostMapping("/booking/save")
-    public String saveBooking(@ModelAttribute BookingEntity booking,
+    public String saveBooking(@ModelAttribute Booking booking,
                               @RequestParam(required = false) List<Integer> selectedDestinationIds) {
 
         booking.setBookingStatus("PENDING");
@@ -115,7 +115,7 @@ public class BookingController {
 
     @GetMapping("/booking/details/{bookingId}")
     public String showBookingDetails(@PathVariable int bookingId, Model model) {
-        BookingEntity booking = bookingService.getBookingById(bookingId);
+        Booking booking = bookingService.getBookingById(bookingId);
         List<Integer> destinationIds = bookingService.getDestinationIdsByBookingId(bookingId);
 
         model.addAttribute("booking", booking);
@@ -126,7 +126,8 @@ public class BookingController {
 
     @GetMapping("/admin/bookings")
     public String showAdminBookingList(Model model) {
-        List<BookingEntity> bookings = bookingService.getAllBookings();
+        List<Booking> bookings = bookingService.getAllBookings();
+
         model.addAttribute("bookings", bookings);
 
         return "admin/booking-list";

@@ -1,7 +1,6 @@
 package com.tourismplatform.service;
 
 import com.tourismplatform.dao.BookingDAO;
-import com.tourismplatform.model.BookingEntity;
 import com.tourismplatform.model.Booking;
 import com.tourismplatform.model.NormalBooking;
 import com.tourismplatform.model.CouponBooking;
@@ -20,40 +19,32 @@ public class BookingService {
         this.bookingDAO = bookingDAO;
     }
 
-    // =========================
-    // COST CALCULATIONS
-    // =========================
-
     public BigDecimal getHotelCost(String hotelType) {
         return switch (hotelType) {
-            case "BUDGET" -> BigDecimal.valueOf(5000);
-            case "STANDARD" -> BigDecimal.valueOf(10000);
-            case "LUXURY" -> BigDecimal.valueOf(20000);
-            default -> BigDecimal.ZERO;
+            case "BUDGET"    -> BigDecimal.valueOf(5000);
+            case "STANDARD"  -> BigDecimal.valueOf(10000);
+            case "LUXURY"    -> BigDecimal.valueOf(20000);
+            default          -> BigDecimal.ZERO;
         };
     }
 
     public BigDecimal getMealCost(String mealOption) {
         return switch (mealOption) {
             case "BREAKFAST_ONLY" -> BigDecimal.valueOf(1500);
-            case "HALF_BOARD" -> BigDecimal.valueOf(3000);
-            case "FULL_BOARD" -> BigDecimal.valueOf(5000);
-            default -> BigDecimal.ZERO;
+            case "HALF_BOARD"     -> BigDecimal.valueOf(3000);
+            case "FULL_BOARD"     -> BigDecimal.valueOf(5000);
+            default               -> BigDecimal.ZERO;
         };
     }
 
     public BigDecimal getGuideCost(String guideOption) {
         return switch (guideOption) {
-            case "NO_GUIDE" -> BigDecimal.ZERO;
+            case "NO_GUIDE"     -> BigDecimal.ZERO;
             case "NORMAL_GUIDE" -> BigDecimal.valueOf(5000);
-            case "PRO_GUIDE" -> BigDecimal.valueOf(10000);
-            default -> BigDecimal.ZERO;
+            case "PRO_GUIDE"    -> BigDecimal.valueOf(10000);
+            default             -> BigDecimal.ZERO;
         };
     }
-
-    // =========================
-    // SUBTOTAL CALCULATION
-    // =========================
 
     public BigDecimal calculateSubtotal(BigDecimal packageBasePrice,
                                         List<BigDecimal> selectedDestinationCosts,
@@ -78,10 +69,6 @@ public class BookingService {
                 .add(getGuideCost(guideOption));
     }
 
-    // =========================
-    // DISCOUNT CALCULATION
-    // =========================
-
     public BigDecimal calculateDiscount(BigDecimal subtotalAmount,
                                         String discountType,
                                         BigDecimal discountValue) {
@@ -91,8 +78,7 @@ public class BookingService {
         }
 
         if ("PERCENTAGE".equals(discountType)) {
-            return subtotalAmount.multiply(discountValue)
-                    .divide(BigDecimal.valueOf(100));
+            return subtotalAmount.multiply(discountValue).divide(BigDecimal.valueOf(100));
         }
 
         if ("FIXED".equals(discountType)) {
@@ -105,10 +91,6 @@ public class BookingService {
         return BigDecimal.ZERO;
     }
 
-    // =========================
-    // FINAL TOTAL (OLD LOGIC)
-    // =========================
-
     public BigDecimal calculateFinalTotal(BigDecimal subtotalAmount, BigDecimal discountAmount) {
         BigDecimal finalTotal = subtotalAmount.subtract(discountAmount);
 
@@ -120,7 +102,7 @@ public class BookingService {
     }
 
     // =========================
-    // OOP POLYMORPHISM METHOD (NEW)
+    // OOP POLYMORPHISM METHOD
     // =========================
 
     public BigDecimal calculateFinalAmountWithOOP(BigDecimal subtotal, BigDecimal discount, int members) {
@@ -134,13 +116,14 @@ public class BookingService {
         }
 
         booking.setSubtotalAmount(subtotal.doubleValue());
-        booking.setDiscountAmount(discount.doubleValue());
+        booking.setDiscountAmount(discount != null ? discount.doubleValue() : 0.0);
 
         double result = booking.calculateTotal();
 
         return BigDecimal.valueOf(result)
                 .multiply(BigDecimal.valueOf(members));
     }
+
     // =========================
     // VALIDATION
     // =========================
@@ -151,11 +134,7 @@ public class BookingService {
                 && !endDate.isBefore(startDate);
     }
 
-    // =========================
-    // DATABASE OPERATIONS
-    // =========================
-
-    public int saveBooking(BookingEntity booking) {
+    public int saveBooking(Booking booking) {
         return bookingDAO.saveBooking(booking);
     }
 
@@ -163,11 +142,11 @@ public class BookingService {
         bookingDAO.saveBookingDestination(bookingId, destinationId);
     }
 
-    public List<BookingEntity> getAllBookings() {
+    public List<Booking> getAllBookings() {
         return bookingDAO.findAllBookings();
     }
 
-    public BookingEntity getBookingById(int bookingId) {
+    public Booking getBookingById(int bookingId) {
         return bookingDAO.findBookingById(bookingId);
     }
 
@@ -184,7 +163,7 @@ public class BookingService {
     }
 
     // =========================
-    // GOOGLE MAPS
+    // GOOGLE MAPS LINK
     // =========================
 
     public String generateGoogleMapsUrl(List<String> destinationNames) {
