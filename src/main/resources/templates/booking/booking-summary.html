@@ -35,6 +35,13 @@
                     <th>End Date</th>
                     <td th:text="${booking.endDate}">2026-05-15</td>
                 </tr>
+
+                <!-- ✅ NEW ROW ADDED -->
+                <tr>
+                    <th>Number of Members</th>
+                    <td th:text="${booking.numberOfMembers}">1</td>
+                </tr>
+
             </table>
 
             <h5 class="mb-3 mt-4">Selected Options</h5>
@@ -71,16 +78,25 @@
                     <th>Subtotal Amount</th>
                     <td>Rs. <span th:text="${booking.subtotalAmount}">0.00</span></td>
                 </tr>
+
                 <tr>
                     <th>Coupon ID</th>
                     <td th:text="${booking.couponId != null ? booking.couponId : 'No coupon applied'}">
                         No coupon applied
                     </td>
                 </tr>
+
                 <tr>
                     <th>Discount Amount</th>
                     <td>Rs. <span th:text="${booking.discountAmount}">0.00</span></td>
                 </tr>
+
+                <!-- 🔥 OPTIONAL BUT RECOMMENDED -->
+                <tr>
+                    <th>Number of Members</th>
+                    <td th:text="${booking.numberOfMembers}">1</td>
+                </tr>
+
                 <tr class="table-success">
                     <th>Final Total Amount</th>
                     <td><strong>Rs. <span th:text="${booking.totalAmount}">0.00</span></strong></td>
@@ -102,6 +118,9 @@
                 <input type="hidden" name="totalAmount" th:value="${booking.totalAmount}">
                 <input type="hidden" name="bookingStatus" th:value="${booking.bookingStatus}">
                 <input type="hidden" name="paymentStatus" th:value="${booking.paymentStatus}">
+
+                <!-- ✅ NEW HIDDEN FIELD -->
+                <input type="hidden" name="numberOfMembers" th:value="${booking.numberOfMembers}">
 
                 <div th:each="destinationId : ${selectedDestinationIds}">
                     <input type="hidden" name="selectedDestinationIds" th:value="${destinationId}">

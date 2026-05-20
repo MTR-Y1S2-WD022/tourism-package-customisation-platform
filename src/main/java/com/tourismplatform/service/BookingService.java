@@ -2,7 +2,6 @@ package com.tourismplatform.service;
 
 import com.tourismplatform.dao.BookingDAO;
 import com.tourismplatform.model.Booking;
-import com.tourismplatform.model.Booking;
 import com.tourismplatform.model.NormalBooking;
 import com.tourismplatform.model.CouponBooking;
 import org.springframework.stereotype.Service;
@@ -22,28 +21,28 @@ public class BookingService {
 
     public BigDecimal getHotelCost(String hotelType) {
         return switch (hotelType) {
-            case "BUDGET" -> BigDecimal.valueOf(5000);
-            case "STANDARD" -> BigDecimal.valueOf(10000);
-            case "LUXURY" -> BigDecimal.valueOf(20000);
-            default -> BigDecimal.ZERO;
+            case "BUDGET"    -> BigDecimal.valueOf(5000);
+            case "STANDARD"  -> BigDecimal.valueOf(10000);
+            case "LUXURY"    -> BigDecimal.valueOf(20000);
+            default          -> BigDecimal.ZERO;
         };
     }
 
     public BigDecimal getMealCost(String mealOption) {
         return switch (mealOption) {
             case "BREAKFAST_ONLY" -> BigDecimal.valueOf(1500);
-            case "HALF_BOARD" -> BigDecimal.valueOf(3000);
-            case "FULL_BOARD" -> BigDecimal.valueOf(5000);
-            default -> BigDecimal.ZERO;
+            case "HALF_BOARD"     -> BigDecimal.valueOf(3000);
+            case "FULL_BOARD"     -> BigDecimal.valueOf(5000);
+            default               -> BigDecimal.ZERO;
         };
     }
 
     public BigDecimal getGuideCost(String guideOption) {
         return switch (guideOption) {
-            case "NO_GUIDE" -> BigDecimal.ZERO;
+            case "NO_GUIDE"     -> BigDecimal.ZERO;
             case "NORMAL_GUIDE" -> BigDecimal.valueOf(5000);
-            case "PRO_GUIDE" -> BigDecimal.valueOf(10000);
-            default -> BigDecimal.ZERO;
+            case "PRO_GUIDE"    -> BigDecimal.valueOf(10000);
+            default             -> BigDecimal.ZERO;
         };
     }
 
@@ -102,6 +101,33 @@ public class BookingService {
         return finalTotal;
     }
 
+    // =========================
+    // OOP POLYMORPHISM METHOD
+    // =========================
+
+    public BigDecimal calculateFinalAmountWithOOP(BigDecimal subtotal, BigDecimal discount, int members) {
+
+        Booking booking;
+
+        if (discount != null && discount.compareTo(BigDecimal.ZERO) > 0) {
+            booking = new CouponBooking();
+        } else {
+            booking = new NormalBooking();
+        }
+
+        booking.setSubtotalAmount(subtotal.doubleValue());
+        booking.setDiscountAmount(discount != null ? discount.doubleValue() : 0.0);
+
+        double result = booking.calculateTotal();
+
+        return BigDecimal.valueOf(result)
+                .multiply(BigDecimal.valueOf(members));
+    }
+
+    // =========================
+    // VALIDATION
+    // =========================
+
     public boolean isValidDateRange(LocalDate startDate, LocalDate endDate) {
         return startDate != null
                 && endDate != null
@@ -136,9 +162,9 @@ public class BookingService {
         bookingDAO.cancelBooking(bookingId);
     }
 
-
-    
-    // Google Map Link
+    // =========================
+    // GOOGLE MAPS LINK
+    // =========================
 
     public String generateGoogleMapsUrl(List<String> destinationNames) {
         String baseUrl = "https://www.google.com/maps/search/?api=1&query=";

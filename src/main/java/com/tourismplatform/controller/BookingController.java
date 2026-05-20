@@ -43,6 +43,7 @@ public class BookingController {
                                      @RequestParam(required = false) List<BigDecimal> selectedDestinationCosts,
                                      @RequestParam(required = false) List<Integer> selectedDestinationIds,
                                      @RequestParam(defaultValue = "0") BigDecimal discountAmount,
+                                     @RequestParam(defaultValue = "1") int numberOfMembers,
                                      Model model) {
 
         if (!bookingService.isValidDateRange(startDate, endDate)) {
@@ -58,21 +59,31 @@ public class BookingController {
                 guideOption
         );
 
-        BigDecimal totalAmount = bookingService.calculateFinalTotal(subtotalAmount, discountAmount);
-        
-        Booking booking = new Booking(); 
-      
+        // includes numberOfMembers in final amount calculation
+        BigDecimal totalAmount = bookingService.calculateFinalAmountWithOOP(
+                subtotalAmount,
+                discountAmount,
+                numberOfMembers
+        );
+
+        Booking booking = new Booking();
         booking.setUserId(userId);
         booking.setPackageId(packageId);
         booking.setCouponId(couponId);
+
         booking.setStartDate(startDate);
         booking.setEndDate(endDate);
+
         booking.setHotelType(hotelType);
         booking.setMealOption(mealOption);
         booking.setGuideOption(guideOption);
+
         booking.setSubtotalAmount(subtotalAmount);
         booking.setDiscountAmount(discountAmount);
         booking.setTotalAmount(totalAmount);
+
+        booking.setNumberOfMembers(numberOfMembers);
+
         booking.setBookingStatus("PENDING");
         booking.setPaymentStatus("PENDING");
 
@@ -85,7 +96,7 @@ public class BookingController {
     @PostMapping("/booking/save")
     public String saveBooking(@ModelAttribute Booking booking,
                               @RequestParam(required = false) List<Integer> selectedDestinationIds) {
- 
+
         booking.setBookingStatus("PENDING");
         booking.setPaymentStatus("PENDING");
 
@@ -104,7 +115,7 @@ public class BookingController {
 
     @GetMapping("/booking/details/{bookingId}")
     public String showBookingDetails(@PathVariable int bookingId, Model model) {
-        Booking booking = bookingService.getBookingById(bookingId);      
+        Booking booking = bookingService.getBookingById(bookingId);
         List<Integer> destinationIds = bookingService.getDestinationIdsByBookingId(bookingId);
 
         model.addAttribute("booking", booking);
@@ -116,7 +127,7 @@ public class BookingController {
     @GetMapping("/admin/bookings")
     public String showAdminBookingList(Model model) {
         List<Booking> bookings = bookingService.getAllBookings();
-      
+
         model.addAttribute("bookings", bookings);
 
         return "admin/booking-list";
