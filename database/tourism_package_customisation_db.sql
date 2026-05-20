@@ -106,6 +106,7 @@ CREATE TABLE IF NOT EXISTS bookings (
       FOREIGN KEY (coupon_id) REFERENCES coupons(coupon_id)
       ON DELETE SET NULL
       );
+     
 
 CREATE TABLE IF NOT EXISTS booking_destinations (
       id INT PRIMARY KEY AUTO_INCREMENT,
@@ -144,6 +145,20 @@ CREATE TABLE IF NOT EXISTS booking_cancellation_requests (
 
      FOREIGN KEY (admin_id) REFERENCES admins(admin_id)
         ON DELETE SET NULL
+    );
+    
+      CREATE TABLE IF NOT EXISTS coupons (
+        coupon_id INT PRIMARY KEY AUTO_INCREMENT,
+        coupon_code VARCHAR(50) NOT NULL UNIQUE,
+        discount_type VARCHAR(20) NOT NULL,
+        discount_value DECIMAL(10,2) NOT NULL,
+        issue_date DATE NOT NULL,
+        expiry_date DATE NOT NULL,
+        status VARCHAR(20) DEFAULT 'ACTIVE',
+        created_by_admin_id INT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+        FOREIGN KEY (created_by_admin_id) REFERENCES admins(admin_id)
     );
     
 
