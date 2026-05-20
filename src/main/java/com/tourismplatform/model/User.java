@@ -3,24 +3,28 @@ package com.tourismplatform.model;
 import java.time.LocalDateTime;
 
 public class User extends Person {
-
     private int userId;
     private String phoneNumber;
     private String address;
-    private String profileImage;
 
-    public User() {
+    public User() {}
+
+    public User(int userId, String fullName, String email, String password,
+                String phoneNumber, String address, LocalDateTime createdAt) {
+        super(fullName, email, password, createdAt);
+        this.userId = userId;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
     }
 
     public User(int userId, String fullName, String email, String password,
                 String phoneNumber, String address, String profileImage,
-                String status, LocalDateTime createdAt) {
+                LocalDateTime createdAt) {
 
-        super(fullName, email, password, status, createdAt);
+        super(fullName, email, password, createdAt);
         this.userId = userId;
         this.phoneNumber = phoneNumber;
         this.address = address;
-        this.profileImage = profileImage;
     }
 
     public int getUserId() {
@@ -45,19 +49,6 @@ public class User extends Person {
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(String profileImage) {
-        this.profileImage = profileImage;
-    }
-
-    @Override
-    public String getDashboardPath() {
-        return "/user/dashboard";
     }
 
 }

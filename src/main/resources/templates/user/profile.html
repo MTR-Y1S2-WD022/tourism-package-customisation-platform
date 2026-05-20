@@ -27,19 +27,39 @@
             color: white;
             padding: 30px;
             border-radius: 20px;
+            position: relative;
         }
 
         .profile-avatar {
-            width: 110px;
-            height: 110px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             border: 3px solid #F4A261;
             object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
+
         .profile-card {
             border: none;
             border-radius: 18px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            background-color: #ffffff;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 20px;
         }
 
         .btn-gold {
@@ -48,145 +68,159 @@
             color: #3b2412;
             font-weight: 700;
             border-radius: 999px;
+            padding: 10px 20px;
+            transition: 0.3s;
         }
 
         .btn-gold:hover {
             background-color: #e78f4e;
+            transform: translateY(-2px);
         }
 
-        .info-label {
-            font-size: 13px;
-            color: #6c757d;
+        .btn-dark-custom {
+            background-color: var(--ceylon-green);
+            color: white;
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 10px 20px;
+            transition: 0.3s;
         }
 
-        .info-value {
-            font-weight: 600;
-            color: #222;
+        .btn-dark-custom:hover {
+            background-color: #0b1d18;
+            color: white;
+            transform: translateY(-2px);
         }
     </style>
 </head>
 
 <body>
 
-<div class="container mt-4">
+<div class="container mt-4 mb-5">
 
-    <!-- HEADER -->
-    <div class="profile-header mb-4 d-flex align-items-start gap-4">
+    <div class="profile-header mb-4 d-flex align-items-center gap-4">
+        <a th:href="@{/user/dashboard}" class="btn btn-light btn-sm rounded-pill fw-bold text-success position-absolute top-0 end-0 m-3 shadow-sm">
+            <i class="bi bi-arrow-left"></i> Dashboard
+        </a>
 
-        <!-- PROFILE IMAGE (LEFT CORNER) -->
-        <img th:src="@{'/images/' + ${user.profileImage}}"
-             class="profile-avatar">
-
-        <!-- USER INFO -->
-        <div class="text-start">
-
-            <h3 class="fw-bold mb-2">
-                Welcome, <span th:text="${user.fullName}"></span> 👋
-            </h3>
-
-            <p class="mb-1">
-                <i class="bi bi-envelope me-2"></i>
-                <span th:text="${user.email}"></span>
-            </p>
-
-            <p class="mb-1">
-                <i class="bi bi-telephone me-2"></i>
-                <span th:text="${user.phoneNumber}"></span>
-            </p>
-
-            <p class="mb-0">
-                <i class="bi bi-geo-alt me-2"></i>
-                <span th:text="${user.address}"></span>
-            </p>
-
+        <div class="profile-avatar d-flex align-items-center justify-content-center bg-light">
+            <i class="bi bi-person-fill fs-1 text-success"></i>
         </div>
 
+        <div>
+            <h2 class="fw-bold mb-1">
+                Welcome, <span th:text="${user.fullName}"></span>
+            </h2>
+            <p class="text-white-50 mb-0">Manage your profile details and security settings.</p>
+        </div>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger shadow-sm border-0 rounded-3">
+        <i class="bi bi-exclamation-circle-fill me-2"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+    <div th:if="${param.message}" class="alert alert-success shadow-sm border-0 rounded-3">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${param.message}"></span>
+    </div>
+
+    <div class="card profile-card p-4 mb-4">
+        <h4 class="fw-bold text-dark border-bottom pb-3 mb-4">
+            <i class="bi bi-person-badge text-success me-2"></i> Current Profile Information
+        </h4>
+
+        <div class="column">
+            <div class="col-md-3 col-sm-6">
+                <p class="info-label"><i class="bi bi-person me-1"></i> Full Name</p>
+                <p class="info-value" th:text="${user.fullName}"></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p class="info-label"><i class="bi bi-envelope me-1"></i> Email Address</p>
+                <p class="info-value" th:text="${user.email}"></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p class="info-label"><i class="bi bi-telephone me-1"></i> Phone Number</p>
+                <p class="info-value" th:text="${user.phoneNumber}"></p>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <p class="info-label"><i class="bi bi-geo-alt me-1"></i> Address</p>
+                <p class="info-value" th:text="${user.address}"></p>
+            </div>
+        </div>
     </div>
 
     <div class="row g-4">
 
-        <!-- INFO CARD -->
-        <div class="col-md-6">
-            <div class="card profile-card p-4">
-                <h5 class="mb-3">Profile Information</h5>
+        <div class="col-lg-6">
+            <div class="card profile-card p-4 h-100 d-flex flex-column">
+                <h5 class="mb-4 fw-bold text-dark">
+                    <i class="bi bi-pencil-square text-success me-2"></i> Edit Details
+                </h5>
 
-                <p class="info-label">Full Name</p>
-                <p class="info-value" th:text="${user.fullName}"></p>
-
-                <p class="info-label">Email</p>
-                <p class="info-value" th:text="${user.email}"></p>
-
-                <p class="info-label">Phone Number</p>
-                <p class="info-value" th:text="${user.phoneNumber}"></p>
-
-                <p class="info-label">Address</p>
-                <p class="info-value" th:text="${user.address}"></p>
-            </div>
-        </div>
-
-        <!-- EDIT CARD -->
-        <div class="col-md-6">
-            <div class="card profile-card p-4">
-                <h5 class="mb-3">Update Profile</h5>
-
-                <form th:action="@{/user/update}" method="post" th:object="${user}" enctype="multipart/form-data">
+                <form th:action="@{/user/update}" method="post" th:object="${user}" enctype="multipart/form-data" class="d-flex flex-column flex-grow-1">
 
                     <input type="hidden" th:field="*{userId}">
 
                     <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        <input type="text" class="form-control" th:field="*{fullName}">
+                        <label class="form-label text-muted small fw-bold">Full Name</label>
+                        <input type="text" class="form-control" th:field="*{fullName}" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Phone</label>
-                        <input type="text" class="form-control" th:field="*{phoneNumber}">
+                        <label class="form-label text-muted small fw-bold">Phone Number</label>
+                        <input type="text" class="form-control" th:field="*{phoneNumber}" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Address</label>
-                        <textarea class="form-control" rows="3" th:field="*{address}"></textarea>
+                        <label class="form-label text-muted small fw-bold">Address</label>
+                        <textarea class="form-control" rows="2" th:field="*{address}" required></textarea>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Profile Photo</label>
-                        <input type="file" name="profileImageFile" class="form-control">
+                    <div class="mt-auto pt-2">
+                        <button type="submit" class="btn btn-gold w-100">
+                            Save Changes
+                        </button>
                     </div>
-
-                    <button type="submit" class="btn btn-gold w-100">
-                        Update Profile
-                    </button>
                 </form>
+            </div>
+        </div>
 
-                <hr>
-                <h5 class="mb-3">Change Password</h5>
+        <div class="col-lg-6">
+            <div class="card profile-card p-4 h-100 d-flex flex-column">
+                <h5 class="mb-4 fw-bold text-dark">
+                    <i class="bi bi-shield-lock text-success me-2"></i> Change Password
+                </h5>
 
-                <form th:action="@{/user/change-password}" method="post">
+                <form th:action="@{/user/change-password}" method="post" class="d-flex flex-column flex-grow-1">
 
-                    <div class="mb-3">
-                        <label class="form-label">Current Password</label>
-                        <input type="password" name="oldPassword" class="form-control" required>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">Current Password</label>
+                        <input type="password" name="oldPassword" class="form-control" placeholder="Enter current password" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">New Password</label>
-                        <input type="password" name="newPassword" class="form-control" required>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">New Password</label>
+                        <input type="password" name="newPassword" class="form-control" placeholder="Minimum 8 characters" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Confirm Password</label>
-                        <input type="password" name="confirmPassword" class="form-control" required>
+                    <div class="mb-4">
+                        <label class="form-label text-muted small fw-bold">Confirm New Password</label>
+                        <input type="password" name="confirmPassword" class="form-control" placeholder="Repeat new password" required>
                     </div>
 
-                    <button type="submit" class="btn btn-warning w-100">
-                        Change Password
-                    </button>
+                    <div class="mt-auto pt-2">
+                        <button type="submit" class="btn btn-dark-custom w-100">
+                            Update Security
+                        </button>
+                    </div>
 
                 </form>
             </div>
         </div>
+
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
